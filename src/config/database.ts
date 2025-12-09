@@ -1,5 +1,9 @@
 import mongoose from "mongoose"
 
+/**
+ * Connect to database
+ * - Using environment variables in .env file
+ */
 const connectDB = async () => {
     try {
         if (!process.env.MONGODB_CONNECTION_STRING) {
@@ -13,3 +17,5 @@ const connectDB = async () => {
         process.exit(1)
     }
 }
+
+export { connectDB }

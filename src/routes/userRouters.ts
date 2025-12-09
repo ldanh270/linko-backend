@@ -1,17 +1,20 @@
 import express from "express"
 
-const userRouter = express.Router()
+const userRouters = express.Router()
 
-// View profile user
-userRouter.get("/:id", () => {})
+// Get profile info of current user
+userRouters.get("/me", () => {})
 
-// Create user account
-userRouter.post("/", () => {})
+// View other user's profile
+userRouters.get("/:id", () => {})
 
-// Update user data
-userRouter.put("/:id", () => {})
+// Search for users by query
+userRouters.get("/search", () => {})
 
-// Delete user account
-userRouter.delete("/:id", () => {})
+// Update current user profile details
+userRouters.put("/me", () => {})
 
-export default userRouter
+// Delete current user account
+userRouters.delete("/", () => {})
+
+export default userRouters

@@ -1,15 +1,32 @@
-import "dotenv/config"
+import dotenv from "dotenv"
 import express from "express"
 
-import chatRouters from "./routes/chatRouters.ts"
-import userRouter from "./routes/userRouters.ts"
+import { connectDB } from "./config/database.ts"
+import authRouters from "./routes/authRouters.ts"
+import conversationRouters from "./routes/conversationRouters.ts"
+import friendRouters from "./routes/friendRouters.ts"
+import userRouters from "./routes/userRouters.ts"
 
-const PORT = process.env.PORT || 5000
+/**
+ * Server configurations
+ */
+dotenv.config() // Create config for using .env variables
+const PORT = process.env.PORT || 5000 // Port where server runing on
 const app = express()
 
-app.use("/api/chat", chatRouters)
-app.use("/api/user", userRouter)
+/**
+ * Main routers
+ */
+app.use("api/auth", authRouters)
+app.use("/api/conversations", conversationRouters)
+app.use("/api/users", userRouters)
+app.use("/api/friends", friendRouters)
 
-app.listen(PORT, () => {
-    console.log("Server start on port " + PORT)
-})
+/**
+ * Must connect to database successfully before start server
+ */
+connectDB().then(() =>
+    app.listen(PORT, () => {
+        console.log("Server start on port " + PORT)
+    }),
+)
