@@ -6,7 +6,7 @@ const userRouters = express.Router()
 userRouters.get("/me", () => {})
 
 // View other user's profile
-userRouters.get("/:id", () => {})
+userRouters.get("/:userId", () => {})
 
 // Search for users by query
 userRouters.get("/search", () => {})

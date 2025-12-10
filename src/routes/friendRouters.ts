@@ -6,7 +6,7 @@ const friendRouters = express.Router()
 friendRouters.get("/", () => {})
 
 // Unfriend
-friendRouters.delete("/:id", () => {})
+friendRouters.delete("/:friendId", () => {})
 
 // List request that current user sent
 friendRouters.get("/sent", () => {})
