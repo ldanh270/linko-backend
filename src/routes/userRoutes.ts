@@ -5,11 +5,11 @@ const userRoutes = express.Router()
 // Get profile info of current user
 userRoutes.get("/me", () => {})
 
-// View other user's profile
-userRoutes.get("/:userId", () => {})
-
 // Search for users by query
 userRoutes.get("/search", () => {})
+
+// View other user's profile
+userRoutes.get("/:userId", () => {})
 
 // Update current user profile details
 userRoutes.put("/me", () => {})

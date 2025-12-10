@@ -14,10 +14,10 @@ friendRoutes.get("/sent", () => {})
 // Send friend request for specific user
 friendRoutes.post("/sent", () => {})
 
-// List request that current user recieved
-friendRoutes.get("/recieved", () => {})
+// List request that current user received
+friendRoutes.get("/received", () => {})
 
 // Accept or Decline request
-friendRoutes.put("/recieved", () => {})
+friendRoutes.put("/received", () => {})
 
 export default friendRoutes
