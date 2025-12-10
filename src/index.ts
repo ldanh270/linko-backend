@@ -25,7 +25,11 @@ app.use(express.json())
  */
 
 // Public routes
-app.use("api/auth", authRouters)
+app.get("/", async (req, res) =>
+    res.status(200).json({ message: "Connect to server successfully" }),
+)
+
+app.use("/api/auth", authRouters)
 
 // Private routes
 app.use("/api/conversations", conversationRouters)

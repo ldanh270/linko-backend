@@ -1,9 +1,11 @@
 import express from "express"
 
+import { SignUpController } from "../controllers/authController.ts"
+
 const authRoutes = express.Router()
 
 // Login
-authRoutes.post("/signup", () => {})
+authRoutes.post("/signup", SignUpController)
 
 // Signup
 authRoutes.post("/login", () => {})

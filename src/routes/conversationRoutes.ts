@@ -24,7 +24,7 @@ conversationRoutes.put("/:conversationId", () => {})
 conversationRoutes.delete("/:conversationId", () => {})
 
 // Delete conversation history (Only for current user)
-conversationRoutes.put("/:conversationId", () => {})
+conversationRoutes.delete("/:conversationId/history", () => {})
 
 /**
  * Nested routers
