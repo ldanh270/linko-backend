@@ -2,10 +2,13 @@
     "name": "linko-backend",
     "private": true,
     "version": "0.0.0",
-    "type": "module",
+    "description": "",
+    "main": "src/index.ts",
     "scripts": {
         "dev": "bun --watch src/index.ts"
     },
+    "type": "module",
+    "author": "ldanh270",
     "dependencies": {
         "dotenv": "^17.2.3",
         "express": "^5.2.1",
