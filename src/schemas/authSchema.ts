@@ -7,12 +7,12 @@ const signupSchema = zod.object({
         username: zod
             .string()
             .min(3, "Username must at least 3 characters")
-            .max(20)
+            .max(30, "Usernames must not exceed 30 characters")
             .trim()
             .toLowerCase()
             .regex(
                 REGEX.USERNAME,
-                "Usernames can only contain lowercase letters, numbers, and underscores",
+                "Usernames can only contain lowercase letters, numbers, underscores (_) and dots (.)",
             ),
 
         displayName: zod.string().min(1, "Display name cannot empty"),
