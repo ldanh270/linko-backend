@@ -1,13 +1,13 @@
 import express from "express"
 
-import { SignUpController } from "../controllers/authController.ts"
+import { SignUp } from "../controllers/authController.ts"
 import validate from "../middlewares/validate.ts"
 import { signupSchema } from "../schemas/authSchema.ts"
 
 const authRoutes = express.Router()
 
 // Signup
-authRoutes.post("/signup", validate(signupSchema), SignUpController)
+authRoutes.post("/signup", validate(signupSchema), SignUp)
 
 // Login
 authRoutes.post("/login", () => {})

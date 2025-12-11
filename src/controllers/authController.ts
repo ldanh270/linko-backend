@@ -2,7 +2,7 @@ import { Request, Response } from "express"
 
 import { createUser } from "../services/authServices.ts"
 
-const SignUpController = async (req: Request, res: Response) => {
+const SignUp = async (req: Request, res: Response) => {
     try {
         const { username, password, email, displayName } = req.body
 
@@ -15,9 +15,9 @@ const SignUpController = async (req: Request, res: Response) => {
             return res.status(409).json({ message: (error as Error).message })
         }
     } catch (error) {
-        console.error("Error when call SignUpController: ", (error as Error).message)
+        console.error("Error when call SignUp: ", (error as Error).message)
         return res.status(500).json({ message: "Internal server error" })
     }
 }
 
-export { SignUpController }
+export { SignUp }
