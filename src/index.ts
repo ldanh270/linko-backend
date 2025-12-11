@@ -36,6 +36,23 @@ app.use("/api/conversations", conversationRouters)
 app.use("/api/users", userRouters)
 app.use("/api/friends", friendRouters)
 
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        status: "error",
+        message: "Route not found",
+    })
+})
+
+// Global error handler
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("Global error:", err)
+    res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+    })
+})
+
 /**
  * Must connect to database successfully before start server
  */
