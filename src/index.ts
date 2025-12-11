@@ -1,11 +1,11 @@
 import dotenv from "dotenv"
 import express from "express"
 
-import { connectDB } from "./config/database.ts"
-import authRouters from "./routes/authRouters.ts"
-import conversationRouters from "./routes/conversationRouters.ts"
-import friendRouters from "./routes/friendRouters.ts"
-import userRouters from "./routes/userRouters.ts"
+import { connectDB } from "./libs/database.ts"
+import authRouters from "./routes/authRoutes.ts"
+import conversationRouters from "./routes/conversationRoutes.ts"
+import friendRouters from "./routes/friendRoutes.ts"
+import userRouters from "./routes/userRoutes.ts"
 
 /**
  * Server configurations
@@ -15,12 +15,43 @@ const PORT = process.env.PORT || 5000 // Port where server runing on
 const app = express()
 
 /**
+ * Middleware
+ */
+
+app.use(express.json())
+
+/**
  * Main routers
  */
-app.use("api/auth", authRouters)
+
+// Public routes
+app.get("/", async (req, res) =>
+    res.status(200).json({ message: "Connect to server successfully" }),
+)
+
+app.use("/api/auth", authRouters)
+
+// Private routes
 app.use("/api/conversations", conversationRouters)
 app.use("/api/users", userRouters)
 app.use("/api/friends", friendRouters)
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({
+        status: "error",
+        message: "Route not found",
+    })
+})
+
+// Global error handler
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("Global error:", err)
+    res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+    })
+})
 
 /**
  * Must connect to database successfully before start server
