@@ -72,4 +72,10 @@ const verifyUser = async ({ username, password }: LoginUser) => {
     return { accessToken, refreshToken }
 }
 
-export { createUser, verifyUser }
+// Delete refresh token in database
+const deleteRefreshToken = async (token: string) => {
+    // Delete refresh token in DB
+    await Session.deleteOne({ refreshToken: token })
+}
+
+export { createUser, verifyUser, deleteRefreshToken }

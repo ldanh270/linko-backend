@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-import { createUser, verifyUser } from "../services/authServices.ts"
+import { createUser, deleteRefreshToken, verifyUser } from "../services/authServices.ts"
 import { REFRESH_TOKEN_TTL } from "../utils/constants.ts"
 
 const signup = async (req: Request, res: Response) => {
@@ -49,4 +49,24 @@ const login = async (req: Request, res: Response) => {
     }
 }
 
-export { signup, login }
+const logout = async (req: Request, res: Response) => {
+    try {
+        // Get refresh token in cookie
+        const refreshToken = req.cookies?.refreshToken
+
+        // Delete refresh token
+        if (refreshToken) {
+            deleteRefreshToken(refreshToken)
+        }
+
+        // Delete cookie
+        res.clearCookie("refreshtoken")
+
+        return res.status(204)
+    } catch (error) {
+        console.error("Error when call logout ", (error as Error).message)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export { signup, login, logout }
