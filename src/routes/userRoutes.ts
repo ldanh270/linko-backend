@@ -1,9 +1,13 @@
-import express from "express"
+import express, { Request, Response } from "express"
 
 const userRoutes = express.Router()
 
 // Get profile info of current user
-userRoutes.get("/me", () => {})
+userRoutes.get("/me", (req: Request, res: Response) => {
+    res.status(200).json({
+        message: "OK",
+    })
+})
 
 // Search for users by query
 userRoutes.get("/search", () => {})

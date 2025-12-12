@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import express from "express"
 
 import { connectDB } from "./libs/database.ts"
+import protectRoutes from "./middlewares/protectRoutes.ts"
 import authRouters from "./routes/authRoutes.ts"
 import conversationRouters from "./routes/conversationRoutes.ts"
 import friendRouters from "./routes/friendRoutes.ts"
@@ -34,6 +35,8 @@ app.get("/", async (req, res) =>
 app.use("/api/auth", authRouters)
 
 // Private routes
+app.use(protectRoutes)
+
 app.use("/api/conversations", conversationRouters)
 app.use("/api/users", userRouters)
 app.use("/api/friends", friendRouters)
