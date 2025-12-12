@@ -1,8 +1,9 @@
 import { Request, Response } from "express"
 
-import { createUser } from "../services/authServices.ts"
+import { createUser, verifyUser } from "../services/authServices.ts"
+import { REFRESH_TOKEN_TTL } from "../utils/constants.ts"
 
-const SignUpController = async (req: Request, res: Response) => {
+const signup = async (req: Request, res: Response) => {
     try {
         const { username, password, email, displayName } = req.body
 
@@ -15,9 +16,37 @@ const SignUpController = async (req: Request, res: Response) => {
             return res.status(409).json({ message: (error as Error).message })
         }
     } catch (error) {
-        console.error("Error when call SignUpController: ", (error as Error).message)
+        console.error("Error when call signup: ", (error as Error).message)
         return res.status(500).json({ message: "Internal server error" })
     }
 }
 
-export { SignUpController }
+const login = async (req: Request, res: Response) => {
+    try {
+        // Get input
+        const { username, password } = req.body
+
+        try {
+            const tokens = await verifyUser({ username, password })
+
+            // Response refresh token (in cookie)
+            res.cookie("refreshToken", tokens.refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: "none", // For stateless front-end & back-end
+                maxAge: REFRESH_TOKEN_TTL,
+            })
+
+            // Response access token (in res.body)
+            res.status(200).json({ message: `Login successfully`, accessToken: tokens.accessToken })
+        } catch (error) {
+            console.error("Validate user error: ", (error as Error).message)
+            return res.status(409).json({ message: (error as Error).message })
+        }
+    } catch (error) {
+        console.error("Error when call login ", (error as Error).message)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export { signup, login }
