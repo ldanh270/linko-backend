@@ -1,12 +1,21 @@
 import bcrypt from "bcrypt"
+import crypto from "crypto"
+import jwt from "jsonwebtoken"
 
+import Session from "../models/Session.ts"
 import User from "../models/User.ts"
+import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../utils/constants.ts"
 
 type CreateUserParams = {
     username: string
     password: string
     email: string
     displayName: string
+}
+
+type LoginUser = {
+    username: string
+    password: string
 }
 
 const createUser = async ({ username, password, email, displayName }: CreateUserParams) => {
@@ -30,4 +39,37 @@ const createUser = async ({ username, password, email, displayName }: CreateUser
     })
 }
 
-export { createUser }
+const verifyUser = async ({ username, password }: LoginUser) => {
+    const user = await User.findOne({ username })
+
+    if (!user) {
+        throw new Error("Wrong username or password")
+    }
+
+    // Compare input password with password in DB
+    const isCorrect = await bcrypt.compare(password, user.hashPassword)
+
+    if (!isCorrect) {
+        throw new Error("Wrong username or password")
+    }
+
+    // Create access token
+    const accessToken = jwt.sign({ userId: user._id }, ACCESS_TOKEN_SECRET, {
+        expiresIn: ACCESS_TOKEN_TTL,
+    })
+
+    // Create refresh token
+    const refreshToken = crypto.randomBytes(64).toString("hex")
+
+    // Create new session to save refresh token
+    await Session.create({
+        userId: user._id,
+        refreshToken,
+        expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL),
+    })
+
+    // Return accessToken & refresh
+    return { accessToken, refreshToken }
+}
+
+export { createUser, verifyUser }
