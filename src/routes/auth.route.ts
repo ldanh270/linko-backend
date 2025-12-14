@@ -1,6 +1,6 @@
 import express from "express"
 
-import { login, logout, signup } from "../controllers/authController.ts"
+import { login, logout, refreshToken, signup } from "../controllers/authController.ts"
 import validate from "../middlewares/validate.ts"
 import { loginSchema, signupSchema } from "../schemas/auth.schema.ts"
 
@@ -16,6 +16,6 @@ authRoutes.post("/login", validate(loginSchema), login)
 authRoutes.post("/logout", logout)
 
 // Use Refresh token to get Access token
-authRoutes.post("/refresh-token", () => {})
+authRoutes.post("/refresh-token", refreshToken)
 
 export default authRoutes

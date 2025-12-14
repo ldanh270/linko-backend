@@ -1,7 +1,14 @@
 import { Request, Response } from "express"
+import jwt from "jsonwebtoken"
 
-import { createUser, deleteRefreshToken, verifyUser } from "../services/auth.service.ts"
-import { REFRESH_TOKEN_TTL } from "../utils/constants.ts"
+import Session from "../models/Session.ts"
+import {
+    createUser,
+    deleteRefreshToken,
+    getNewAccessToken,
+    verifyUser,
+} from "../services/auth.service.ts"
+import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../utils/constants.ts"
 
 const signup = async (req: Request, res: Response) => {
     try {
@@ -69,6 +76,22 @@ const logout = async (req: Request, res: Response) => {
     }
 }
 
-const refreshToken = async (req: Request, res: Response) => {}
+const refreshToken = async (req: Request, res: Response) => {
+    // Get refresh token from cookie
+    let accessToken = ""
+    const refreshToken = req.cookies?.refreshToken
 
-export { signup, login, logout }
+    if (!refreshToken) {
+        return res.status(401).json({ message: "Token not exists" })
+    }
+    try {
+        accessToken = await getNewAccessToken(refreshToken)
+    } catch (error) {
+        console.error("Validate user error: ", (error as Error).message)
+        return res.status(409).json({ message: (error as Error).message })
+    }
+
+    return res.status(200).json({ accessToken })
+}
+
+export { signup, login, logout, refreshToken }
