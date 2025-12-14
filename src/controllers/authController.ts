@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-import { createUser, deleteRefreshToken, verifyUser } from "../services/authServices.ts"
+import { createUser, deleteRefreshToken, verifyUser } from "../services/auth.service.ts"
 import { REFRESH_TOKEN_TTL } from "../utils/constants.ts"
 
 const signup = async (req: Request, res: Response) => {
@@ -68,5 +68,7 @@ const logout = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal server error" })
     }
 }
+
+const refreshToken = async (req: Request, res: Response) => {}
 
 export { signup, login, logout }

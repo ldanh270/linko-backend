@@ -2,7 +2,7 @@ import express from "express"
 
 import { login, logout, signup } from "../controllers/authController.ts"
 import validate from "../middlewares/validate.ts"
-import { loginSchema, signupSchema } from "../schemas/authSchema.ts"
+import { loginSchema, signupSchema } from "../schemas/auth.schema.ts"
 
 const authRoutes = express.Router()
 

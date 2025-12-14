@@ -4,10 +4,10 @@ import express from "express"
 
 import { connectDB } from "./libs/database.ts"
 import protectRoutes from "./middlewares/protectRoutes.ts"
-import authRouters from "./routes/authRoutes.ts"
-import conversationRouters from "./routes/conversationRoutes.ts"
-import friendRouters from "./routes/friendRoutes.ts"
-import userRouters from "./routes/userRoutes.ts"
+import authRouters from "./routes/auth.route.ts"
+import conversationRouters from "./routes/conversation.route.ts"
+import friendRouters from "./routes/friend.route.ts"
+import userRouters from "./routes/user.route.ts"
 
 /**
  * Server configurations
