@@ -45,6 +45,15 @@ const userSchema = new mongoose.Schema(
             },
         },
 
+        background: {
+            url: {
+                type: String,
+            },
+            id: {
+                type: String,
+            },
+        },
+
         bio: {
             type: String,
             maxlength: 500,
