@@ -115,20 +115,30 @@ const conversationSchema = new mongoose.Schema(
             required: true,
         },
 
+        group: {
+            type: groupSchema,
+        },
+
         lastMessage: {
             type: lastMessageSchema,
             default: null,
         },
 
-        group: {
-            type: groupSchema,
+        // List of { participantId: unreadMessageNumber }
+        unreadCount: {
+            type: Map,
+            of: Number,
+            default: {},
         },
     },
+
     {
         // Auto create createdAt & updatedAt
         timestamps: true,
     },
 )
+
+conversationSchema.index({ "participant.userId": 1, "lastMessage.createdAt": -1 })
 
 const Conversation = mongoose.model("Conversation", conversationSchema)
 
