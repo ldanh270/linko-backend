@@ -8,17 +8,55 @@ const messageSchema = new mongoose.Schema(
             required: true,
             index: true,
         },
-
         senderId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
             index: true,
         },
+
         content: {
             type: String,
             trim: true,
         },
+
+        // Metadata
+        replyTo: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Message",
+        },
+        mentions: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        reactions: [
+            {
+                type: String,
+                enum: ["LIKE", "LOVE", "HAHA", "WOW", "SAD", "ANGRY"],
+            },
+        ],
+        attachments: [
+            {
+                // Link CDN to display
+                url: {
+                    type: String,
+                },
+                // Cloundinary public id to delete avatar
+                id: {
+                    type: String,
+                },
+            },
+        ],
+
+        // For "Delete for me only" feature
+        hiddenBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
     {
         // Auto create createdAt & updatedAt
