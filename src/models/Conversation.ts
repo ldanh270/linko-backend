@@ -138,7 +138,8 @@ const conversationSchema = new mongoose.Schema(
     },
 )
 
-conversationSchema.index({ "participant.userId": 1, "lastMessage.createdAt": -1 })
+// To get latest messsages when open app or open specific conversation
+conversationSchema.index({ "participant.userId": 1, "lastMessage.createdAt": -1 }) // participant.userId => ASC, lastMessage.createdAt => DESC
 
 const Conversation = mongoose.model("Conversation", conversationSchema)
 
