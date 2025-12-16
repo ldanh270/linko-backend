@@ -1,6 +1,6 @@
 import express from "express"
 
-import { login, logout, refreshToken, signup } from "../controllers/authController.ts"
+import { login, logout, refreshToken, signup } from "../controllers/auth.controller.ts"
 import validate from "../middlewares/validate.ts"
 import { loginSchema, signupSchema } from "../schemas/auth.schema.ts"
 
