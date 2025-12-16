@@ -45,7 +45,11 @@ const login = async (req: Request, res: Response) => {
             })
 
             // Response access token (in res.body)
-            res.status(200).json({ message: `Login successfully`, accessToken: tokens.accessToken })
+            res.status(200).json({
+                message: `Login successfully`,
+                accessToken: tokens.accessToken,
+                user: tokens.user,
+            })
         } catch (error) {
             console.error("Validate user error: ", (error as Error).message)
             return res.status(409).json({ message: (error as Error).message })
@@ -85,7 +89,7 @@ const refreshToken = async (req: Request, res: Response) => {
         return res.status(401).json({ message: "Token not exists" })
     }
     try {
-        accessToken = await getNewAccessToken(refreshToken)
+        const accessToken = await getNewAccessToken(refreshToken)
     } catch (error) {
         console.error("Validate user error: ", (error as Error).message)
         return res.status(409).json({ message: (error as Error).message })
