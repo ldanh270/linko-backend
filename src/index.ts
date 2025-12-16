@@ -3,10 +3,11 @@ import dotenv from "dotenv"
 import express from "express"
 
 import { connectDB } from "./libs/database.ts"
-import authRouters from "./routes/authRoutes.ts"
-import conversationRouters from "./routes/conversationRoutes.ts"
-import friendRouters from "./routes/friendRoutes.ts"
-import userRouters from "./routes/userRoutes.ts"
+import protectRoutes from "./middlewares/protectRoutes.ts"
+import authRouters from "./routes/auth.route.ts"
+import conversationRouters from "./routes/conversation.route.ts"
+import friendRouters from "./routes/friend.route.ts"
+import userRouters from "./routes/user.route.ts"
 
 /**
  * Server configurations
@@ -34,6 +35,8 @@ app.get("/", async (req, res) =>
 app.use("/api/auth", authRouters)
 
 // Private routes
+app.use(protectRoutes)
+
 app.use("/api/conversations", conversationRouters)
 app.use("/api/users", userRouters)
 app.use("/api/friends", friendRouters)

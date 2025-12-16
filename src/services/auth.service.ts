@@ -78,4 +78,32 @@ const deleteRefreshToken = async (token: string) => {
     await Session.deleteOne({ refreshToken: token })
 }
 
-export { createUser, verifyUser, deleteRefreshToken }
+const getNewAccessToken = async (token: string) => {
+    // Compare with token in database
+    const session = await Session.findOne({ refreshToken: token })
+
+    // Check if token not exists
+    if (!session) {
+        throw new Error("Incorrect or expired token")
+    }
+
+    // Check if token expired
+    if (session.expiresAt < new Date()) {
+        throw new Error("Incorrect or expired token")
+    }
+
+    // Create new access token
+    const accessToken = jwt.sign(
+        {
+            userId: session.userId,
+        },
+        ACCESS_TOKEN_SECRET,
+        {
+            expiresIn: ACCESS_TOKEN_TTL,
+        },
+    )
+
+    return accessToken
+}
+
+export { createUser, verifyUser, deleteRefreshToken, getNewAccessToken }

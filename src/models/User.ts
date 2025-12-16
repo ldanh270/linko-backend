@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose, { InferSchemaType } from "mongoose"
 
 const userSchema = new mongoose.Schema(
     {
@@ -45,6 +45,15 @@ const userSchema = new mongoose.Schema(
             },
         },
 
+        background: {
+            url: {
+                type: String,
+            },
+            id: {
+                type: String,
+            },
+        },
+
         bio: {
             type: String,
             maxlength: 500,
@@ -65,3 +74,5 @@ const userSchema = new mongoose.Schema(
 const User = mongoose.model("User", userSchema)
 
 export default User
+
+export type UserType = InferSchemaType<typeof userSchema>

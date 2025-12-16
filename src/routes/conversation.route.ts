@@ -1,7 +1,7 @@
 import express from "express"
 
-import messageRoutes from "./conversationRoutes/messageRoutes"
-import participantRoutes from "./conversationRoutes/participantRoutes"
+import messageRoutes from "./conversationRoutes/message.route.ts"
+import participantRoutes from "./conversationRoutes/participant.route.ts"
 
 const conversationRoutes = express.Router()
 
