@@ -2,11 +2,11 @@ import bcrypt from "bcrypt"
 import crypto from "crypto"
 import jwt from "jsonwebtoken"
 
-import Session from "../models/Session.ts"
-import User from "../models/User.ts"
-import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../utils/constants.ts"
+import Session from "../models/Session"
+import User from "../models/User"
+import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../utils/constants"
 
-type CreateUserParams = {
+type SignupUser = {
     username: string
     password: string
     email: string
@@ -18,7 +18,7 @@ type LoginUser = {
     password: string
 }
 
-const createUser = async ({ username, password, email, displayName }: CreateUserParams) => {
+const createUser = async ({ username, password, email, displayName }: SignupUser) => {
     // Check username or email already exists
     const duplicate = await User.findOne({ $or: [{ username: username }, { email: email }] })
 
@@ -103,7 +103,7 @@ const getNewAccessToken = async (token: string) => {
         },
     )
 
-    return accessToken
+    return { accessToken }
 }
 
 export { createUser, verifyUser, deleteRefreshToken, getNewAccessToken }

@@ -1,14 +1,12 @@
 import { Request, Response } from "express"
-import jwt from "jsonwebtoken"
 
-import Session from "../models/Session.ts"
 import {
     createUser,
     deleteRefreshToken,
     getNewAccessToken,
     verifyUser,
-} from "../services/auth.service.ts"
-import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../utils/constants.ts"
+} from "../services/auth.service"
+import { REFRESH_TOKEN_TTL } from "../utils/constants"
 
 const signup = async (req: Request, res: Response) => {
     try {
@@ -48,7 +46,6 @@ const login = async (req: Request, res: Response) => {
             res.status(200).json({
                 message: `Login successfully`,
                 accessToken: tokens.accessToken,
-                user: tokens.user,
             })
         } catch (error) {
             console.error("Validate user error: ", (error as Error).message)
