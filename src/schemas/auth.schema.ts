@@ -1,6 +1,6 @@
 import zod from "zod"
 
-import { REGEX } from "../utils/constants.ts"
+import { REGEX } from "../utils/constants"
 
 const signupSchema = zod.object({
     body: zod.object({

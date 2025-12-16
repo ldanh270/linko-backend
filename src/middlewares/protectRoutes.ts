@@ -8,11 +8,7 @@ interface DecodedToken extends JwtPayload {
     userId: string
 }
 
-export interface AuthRequest extends Request {
-    user?: UserType
-}
-
-const protectRoutes = (req: AuthRequest, res: Response, next: NextFunction) => {
+const protectRoutes = (req: Request, res: Response, next: NextFunction) => {
     try {
         // Get access token in res.header
         const authHeader = req.headers["authorization"]
