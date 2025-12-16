@@ -1,8 +1,8 @@
 import express from "express"
 
-import { login, logout, refreshToken, signup } from "../controllers/auth.controller.ts"
-import validate from "../middlewares/validate.ts"
-import { loginSchema, signupSchema } from "../schemas/auth.schema.ts"
+import { login, logout, refreshToken, signup } from "../controllers/auth.controller"
+import validate from "../middlewares/validate"
+import { loginSchema, signupSchema } from "../schemas/auth.schema"
 
 const authRoutes = express.Router()
 

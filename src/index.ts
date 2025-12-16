@@ -2,12 +2,12 @@ import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
 import express from "express"
 
-import { connectDB } from "./libs/database.ts"
-import protectRoutes from "./middlewares/protectRoutes.ts"
-import authRouters from "./routes/auth.route.ts"
-import conversationRouters from "./routes/conversation.route.ts"
-import friendRouters from "./routes/friend.route.ts"
-import userRouters from "./routes/user.route.ts"
+import { connectDB } from "./libs/database"
+import protectRoutes from "./middlewares/protectRoutes"
+import authRouters from "./routes/auth.route"
+import conversationRouters from "./routes/conversation.route"
+import friendRouters from "./routes/friend.route"
+import userRouters from "./routes/user.route"
 
 /**
  * Server configurations
