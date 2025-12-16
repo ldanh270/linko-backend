@@ -4,7 +4,7 @@ import FriendRequest from "../models/FriendRequest"
 import Friendship from "../models/Friendship"
 import User from "../models/User"
 
-const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId) => {
+const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, message?: string) => {
     // Check is toUser exists
     const user = await User.exists({ _id: to })
     if (!user) throw new Error("User not exists")
@@ -31,6 +31,9 @@ const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId) => 
 
     if (alreadyFriend) throw new Error("Users were already friends")
     if (existingRequest) throw new Error("Friend request already pending")
+
+    // Send request
+    FriendRequest.create({ from, to, message })
 }
 
 export { createFriendRequest }

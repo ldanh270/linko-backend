@@ -38,12 +38,12 @@ const sendRequest = async (req: Request, res: Response) => {
         // Validate
         if (!from) return res.status(401).json({ message: "Unauthorized" })
         if (!to) return res.status(400).json({ message: "Missing sendTo" })
-        if (!message) return res.status(400).json({ message: "Missing invite message" })
+
         if (from === to)
             return res.status(400).json({ message: "Sender and receiver cannot be the same" })
 
         try {
-            await createFriendRequest(from, to)
+            await createFriendRequest(from, to, message)
         } catch (error) {
             console.error("Create friend request error: ", (error as Error).message)
             return res.status(400).json({ message: (error as Error).message })
