@@ -91,6 +91,20 @@ const acceptRequest = async (req: Request, res: Response) => {
 
 const declineRequest = async (req: Request, res: Response) => {
     try {
+        const userId = req.user._id
+        const { requestId } = req.params
+
+        // Validate
+        if (!userId) return res.status(401).json({ message: "Unauthorized" })
+        if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
+
+        try {
+            deleteFriendRequest(requestId, userId)
+            return res.status(200).json({ message: "Deny friend request successfully" })
+        } catch (error) {
+            console.error("Create friendship error: ", (error as Error).message)
+            return res.status(400).json({ message: (error as Error).message })
+        }
     } catch (error) {
         console.error("declineRequest error: ", (error as Error).message)
         return res.status(500).json({ message: "Internal server error" })

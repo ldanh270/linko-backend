@@ -52,4 +52,17 @@ const createFriendship = async (requestId: string, userId: Types.ObjectId) => {
     await FriendRequest.findByIdAndDelete(requestId)
 }
 
-export { createFriendRequest, createFriendship }
+const deleteFriendRequest = async (requestId: string, userId: Types.ObjectId) => {
+    const friendRequest = await FriendRequest.findOne({ _id: requestId })
+
+    // Validate
+    if (!friendRequest) throw new Error("Friend request not exists")
+
+    // Only received user can be deny request
+    if (userId != friendRequest.to) throw new Error("Unauthorized")
+
+    // Delete request
+    await FriendRequest.findByIdAndDelete(requestId)
+}
+
+export { createFriendRequest, createFriendship, deleteFriendRequest }
