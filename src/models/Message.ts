@@ -33,8 +33,14 @@ const messageSchema = new mongoose.Schema(
         ],
         reactions: [
             {
-                type: String,
-                enum: ["LIKE", "LOVE", "HAHA", "WOW", "SAD", "ANGRY"],
+                participant: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                },
+                emoji: {
+                    type: String,
+                    enum: ["LIKE", "LOVE", "HAHA", "WOW", "SAD", "ANGRY"],
+                },
             },
         ],
         attachments: [
