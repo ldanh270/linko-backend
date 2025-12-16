@@ -36,4 +36,20 @@ const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, mes
     FriendRequest.create({ from, to, message })
 }
 
-export { createFriendRequest }
+const createFriendship = async (requestId: string, userId: Types.ObjectId) => {
+    const friendRequest = await FriendRequest.findOne({ _id: requestId })
+
+    // Validate
+    if (!friendRequest) throw new Error("Friend request not exists")
+
+    // Only received user can be accept request
+    if (userId != friendRequest.to) throw new Error("Unauthorized")
+
+    // Create friendship
+    await Friendship.create({ userA: userId, userB: friendRequest.from })
+
+    // Delete request
+    await FriendRequest.findByIdAndDelete(requestId)
+}
+
+export { createFriendRequest, createFriendship }

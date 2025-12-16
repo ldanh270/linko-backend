@@ -1,7 +1,10 @@
 import { Request, Response } from "express"
 
-import User from "../models/User"
-import { createFriendRequest } from "../services/friend.service"
+import {
+    createFriendRequest,
+    createFriendship,
+    deleteFriendRequest,
+} from "../services/friend.service"
 
 // Get data
 const getAllFriends = async (req: Request, res: Response) => {
@@ -28,7 +31,7 @@ const getRecievedRequests = async (req: Request, res: Response) => {
     }
 }
 
-// Send/Decline request
+// Send request
 const sendRequest = async (req: Request, res: Response) => {
     try {
         // Get input data (from, to, message) from req
@@ -44,6 +47,7 @@ const sendRequest = async (req: Request, res: Response) => {
 
         try {
             await createFriendRequest(from, to, message)
+            return res.status(200).json({ message: "Send friend request successfully" })
         } catch (error) {
             console.error("Create friend request error: ", (error as Error).message)
             return res.status(400).json({ message: (error as Error).message })
@@ -65,6 +69,20 @@ const unfriend = async (req: Request, res: Response) => {
 // Modify request
 const acceptRequest = async (req: Request, res: Response) => {
     try {
+        const userId = req.user._id
+        const { requestId } = req.params
+
+        // Validate
+        if (!userId) return res.status(401).json({ message: "Unauthorized" })
+        if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
+
+        try {
+            createFriendship(requestId, userId)
+            return res.status(200).json({ message: "Accept friend request successfully" })
+        } catch (error) {
+            console.error("Create friendship error: ", (error as Error).message)
+            return res.status(400).json({ message: (error as Error).message })
+        }
     } catch (error) {
         console.error("acceptRequest error: ", (error as Error).message)
         return res.status(500).json({ message: "Internal server error" })
