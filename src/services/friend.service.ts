@@ -43,7 +43,7 @@ const createFriendship = async (requestId: string, userId: Types.ObjectId) => {
     if (!friendRequest) throw new Error("Friend request not exists")
 
     // Only received user can be accept request
-    if (userId != friendRequest.to) throw new Error("Unauthorized")
+    if (userId.toString() !== friendRequest.to.toString()) throw new Error("Unauthorized")
 
     // Create friendship
     await Friendship.create({ userA: userId, userB: friendRequest.from })
