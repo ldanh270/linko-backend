@@ -4,6 +4,24 @@ import FriendRequest from "../models/FriendRequest"
 import Friendship from "../models/Friendship"
 import User from "../models/User"
 
+const getFriendList = async (userId: Types.ObjectId) => {
+    const friendShips = await Friendship.find({
+        $or: [{ userA: userId }, { userB: userId }],
+    })
+        .populate("userA", "_id displayName avatar.url")
+        .populate("userB", "_id displayName avatar.url")
+        .lean()
+
+    // User have no friend
+    if (friendShips.length === 0) return []
+
+    // Get friend list of userId
+    const friends = friendShips.map((fs) =>
+        fs.userA._id.toString() === userId.toString() ? fs.userB : fs.userA,
+    )
+    return friends
+}
+
 const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, message?: string) => {
     // Check is toUser exists
     const user = await User.exists({ _id: to })
@@ -65,4 +83,4 @@ const deleteFriendRequest = async (requestId: string, userId: Types.ObjectId) =>
     await FriendRequest.findByIdAndDelete(requestId)
 }
 
-export { createFriendRequest, createFriendship, deleteFriendRequest }
+export { createFriendRequest, createFriendship, deleteFriendRequest, getFriendList }
