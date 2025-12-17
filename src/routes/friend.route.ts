@@ -28,9 +28,9 @@ friendRoutes.post("/sent", sendRequest)
 friendRoutes.delete("/:friendId", unfriend)
 
 // Accept request
-friendRoutes.post(":requestId/accept", acceptRequest)
+friendRoutes.post("/:requestId/accept", acceptRequest)
 
 // Decline request
-friendRoutes.post(":requestId/accept", declineRequest)
+friendRoutes.post("/:requestId/accept", declineRequest)
 
 export default friendRoutes
