@@ -4,11 +4,21 @@ import {
     createFriendRequest,
     createFriendship,
     deleteFriendRequest,
+    getFriendList,
 } from "../services/friend.service"
 
 // Get data
 const getAllFriends = async (req: Request, res: Response) => {
     try {
+        const userId = req.user._id
+
+        try {
+            const list = await getFriendList(userId)
+            return res.status(200).json({ list })
+        } catch (error) {
+            console.error("Get friend list error: ", (error as Error).message)
+            return res.status(400).json({ message: (error as Error).message })
+        }
     } catch (error) {
         console.error("getAllFriends error: ", (error as Error).message)
         return res.status(500).json({ message: "Internal server error" })
@@ -77,7 +87,7 @@ const acceptRequest = async (req: Request, res: Response) => {
         if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
         try {
-            createFriendship(requestId, userId)
+            await createFriendship(requestId, userId)
             return res.status(200).json({ message: "Accept friend request successfully" })
         } catch (error) {
             console.error("Create friendship error: ", (error as Error).message)
@@ -99,7 +109,7 @@ const declineRequest = async (req: Request, res: Response) => {
         if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
         try {
-            deleteFriendRequest(requestId, userId)
+            await deleteFriendRequest(requestId, userId)
             return res.status(200).json({ message: "Deny friend request successfully" })
         } catch (error) {
             console.error("Create friendship error: ", (error as Error).message)

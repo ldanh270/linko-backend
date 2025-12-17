@@ -1,12 +1,12 @@
 import { Request, Response } from "express"
 
+import { REFRESH_TOKEN_TTL } from "../config/constants"
 import {
     createUser,
     deleteRefreshToken,
     getNewAccessToken,
     verifyUser,
 } from "../services/auth.service"
-import { REFRESH_TOKEN_TTL } from "../utils/constants"
 
 const signup = async (req: Request, res: Response) => {
     try {
