@@ -99,7 +99,7 @@ const declineRequest = async (req: Request, res: Response) => {
         if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
         try {
-            deleteFriendRequest(requestId, userId)
+            await deleteFriendRequest(requestId, userId)
             return res.status(200).json({ message: "Deny friend request successfully" })
         } catch (error) {
             console.error("Create friendship error: ", (error as Error).message)

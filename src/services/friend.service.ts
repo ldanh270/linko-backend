@@ -59,7 +59,7 @@ const deleteFriendRequest = async (requestId: string, userId: Types.ObjectId) =>
     if (!friendRequest) throw new Error("Friend request not exists")
 
     // Only received user can be deny request
-    if (userId != friendRequest.to) throw new Error("Unauthorized")
+    if (userId.toString() !== friendRequest.to.toString()) throw new Error("Unauthorized")
 
     // Delete request
     await FriendRequest.findByIdAndDelete(requestId)
