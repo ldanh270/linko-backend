@@ -2,7 +2,11 @@ import bcrypt from "bcrypt"
 import crypto from "crypto"
 import jwt from "jsonwebtoken"
 
-import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../config/constants"
+import {
+    ACCESS_TOKEN_SECRET,
+    ACCESS_TOKEN_TTL,
+    REFRESH_TOKEN_TTL,
+} from "../config/constants/authTokens"
 import Session from "../models/Session"
 import User from "../models/User"
 

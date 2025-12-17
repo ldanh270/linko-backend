@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 
-import { REFRESH_TOKEN_TTL } from "../config/constants"
+import { REFRESH_TOKEN_TTL } from "../config/constants/authTokens"
 import {
     createUser,
     deleteRefreshToken,
