@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express"
 import jwt, { JwtPayload } from "jsonwebtoken"
 
+import { ACCESS_TOKEN_SECRET } from "../config/constants"
 import User, { UserType } from "../models/User"
-import { ACCESS_TOKEN_SECRET } from "../utils/constants"
 
 interface DecodedToken extends JwtPayload {
     userId: string

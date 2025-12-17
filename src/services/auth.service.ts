@@ -2,9 +2,9 @@ import bcrypt from "bcrypt"
 import crypto from "crypto"
 import jwt from "jsonwebtoken"
 
+import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../config/constants"
 import Session from "../models/Session"
 import User from "../models/User"
-import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../utils/constants"
 
 type SignupUser = {
     username: string
