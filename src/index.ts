@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import express from "express"
 
 import { connectDB } from "./libs/database"
+import { globalErrorHandler } from "./middlewares/globalErrorHandler"
 import protectRoutes from "./middlewares/protectRoutes"
 import authRouters from "./routes/auth.route"
 import conversationRouters from "./routes/conversation.route"
@@ -50,13 +51,7 @@ app.use((req, res) => {
 })
 
 // Global error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error("Global error:", err)
-    res.status(500).json({
-        status: "error",
-        message: "Internal server error",
-    })
-})
+app.use(globalErrorHandler)
 
 /**
  * Must connect to database successfully before start server

@@ -2,9 +2,15 @@ import bcrypt from "bcrypt"
 import crypto from "crypto"
 import jwt from "jsonwebtoken"
 
-import { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from "../config/constants"
+import {
+    ACCESS_TOKEN_SECRET,
+    ACCESS_TOKEN_TTL,
+    REFRESH_TOKEN_TTL,
+} from "../config/constants/authTokens"
+import { HttpStatusCode } from "../config/constants/httpStatusCode"
 import Session from "../models/Session"
 import User from "../models/User"
+import AppError from "../utils/AppError"
 
 type SignupUser = {
     username: string
@@ -25,7 +31,7 @@ const createUser = async ({ username, password, email, displayName }: SignupUser
     if (duplicate) {
         const field = duplicate.username === username ? "Username" : "Email"
 
-        throw new Error(`${field} already exists`)
+        throw new AppError(HttpStatusCode.CONFLICT, `${field} already exists`)
     }
     // Encrypt password
     const hashPassword = await bcrypt.hash(password, 10) // salt = 10 (encrypt password 2^10 times)
@@ -43,14 +49,14 @@ const verifyUser = async ({ username, password }: LoginUser) => {
     const user = await User.findOne({ username })
 
     if (!user) {
-        throw new Error("Wrong username or password")
+        throw new AppError(HttpStatusCode.UNAUTHORIZED, "Wrong username or password")
     }
 
     // Compare input password with password in DB
     const isCorrect = await bcrypt.compare(password, user.hashPassword)
 
     if (!isCorrect) {
-        throw new Error("Wrong username or password")
+        throw new AppError(HttpStatusCode.UNAUTHORIZED, "Wrong username or password")
     }
 
     // Create access token
@@ -84,12 +90,12 @@ const getNewAccessToken = async (token: string) => {
 
     // Check if token not exists
     if (!session) {
-        throw new Error("Incorrect or expired token")
+        throw new AppError(HttpStatusCode.UNAUTHORIZED, "Incorrect or expired token")
     }
 
     // Check if token expired
     if (session.expiresAt < new Date()) {
-        throw new Error("Incorrect or expired token")
+        throw new AppError(HttpStatusCode.UNAUTHORIZED, "Incorrect or expired token")
     }
 
     // Create new access token

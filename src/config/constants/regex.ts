@@ -11,7 +11,3 @@ export const REGEX = {
     // Can include + at first character, length from 10 to 15 characters
     PHONE: /^\+?[0-9]{10,15}$/,
 }
-
-export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || ""
-export const ACCESS_TOKEN_TTL = "15m"
-export const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60 * 1000 // 7 days
