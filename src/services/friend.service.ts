@@ -114,11 +114,24 @@ const createFriendship = async (requestId: string, userId: Types.ObjectId) => {
     if (userId.toString() !== friendRequest.to.toString())
         throw new AppError(HttpStatusCode.FORBIDDEN, "Only invited user can be accept request")
 
+    // Swap if userA > userB before create friendship
+    let userA = userId.toString()
+    let userB = friendRequest.from.toString()
+
+    if (userA > userB) [userA, userB] = [userB, userA] // Swap userA & userB if userA > userB
+
     // Create friendship
-    await Friendship.create({ userA: userId, userB: friendRequest.from })
+    const friendship = await Friendship.create({ userA, userB })
 
     // Delete request
     await FriendRequest.findByIdAndDelete(requestId)
+
+    await friendship.populate([
+        { path: "userA", select: "name avatar email" },
+        { path: "userB", select: "name avatar email" },
+    ])
+
+    return friendship
 }
 
 const deleteFriendRequest = async (requestId: string, userId: Types.ObjectId) => {

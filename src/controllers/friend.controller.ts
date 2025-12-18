@@ -42,6 +42,7 @@ const getRecievedRequests = async (req: Request, res: Response) => {
 
     // Get requests current user sent
     const list = await getFriendRequestList(userId, "RECEIVED")
+
     return res.status(200).json({ list })
 }
 
@@ -86,9 +87,9 @@ const acceptRequest = async (req: Request, res: Response) => {
     if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
     // Create friendship & Delete friend request
-    await createFriendship(requestId, userId)
+    const friendship = await createFriendship(requestId, userId)
 
-    return res.status(200).json({ message: "Accept friend request successfully" })
+    return res.status(201).json({ message: "Accept friend request successfully", friendship })
 }
 
 const declineRequest = async (req: Request, res: Response) => {
