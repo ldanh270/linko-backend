@@ -65,7 +65,7 @@ const createFriendship = async (requestId: string, userId: Types.ObjectId) => {
 
     // Only received user can be accept request
     if (userId.toString() !== friendRequest.to.toString())
-        throw new AppError(HttpStatusCode.UNAUTHORIZED, "Only invited user can be accept request")
+        throw new AppError(HttpStatusCode.FORBIDDEN, "Only invited user can be accept request")
 
     // Create friendship
     await Friendship.create({ userA: userId, userB: friendRequest.from })
