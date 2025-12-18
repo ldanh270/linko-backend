@@ -29,7 +29,9 @@ const getSentRequests = async (req: Request, res: Response) => {
     if (!userId) return res.status(400).json({ message: "Missing user data" })
 
     // Get requests current user sent
-    await getFriendRequestList(userId, "SENT")
+    const list = await getFriendRequestList(userId, "SENT")
+
+    return res.status(200).json({ list })
 }
 
 const getRecievedRequests = async (req: Request, res: Response) => {
@@ -39,7 +41,8 @@ const getRecievedRequests = async (req: Request, res: Response) => {
     if (!userId) return res.status(400).json({ message: "Missing user data" })
 
     // Get requests current user sent
-    await getFriendRequestList(userId, "RECEIVED")
+    const list = await getFriendRequestList(userId, "RECEIVED")
+    return res.status(200).json({ list })
 }
 
 // Send request

@@ -26,6 +26,44 @@ const getFriendList = async (userId: Types.ObjectId) => {
     return friends
 }
 
+const getFriendRequestList = async (userId: Types.ObjectId, type: "SENT" | "RECEIVED" | "BOTH") => {
+    let filter: QueryFilter<FriendRequestType> = {}
+    const selectFields = "_id username displayName avatar.url"
+
+    if (type === "SENT") {
+        // SENT: Only Sent requests (from: userId)
+        filter = { from: userId }
+    } else if (type === "RECEIVED") {
+        // RECEIVED: Only Received requests (to: UserId)
+        filter = { to: userId }
+    } else {
+        // BOTH: Both Sent & Received
+        filter = {
+            $or: [{ from: userId }, { to: userId }],
+        }
+    }
+
+    // Friend request list result
+    const query = FriendRequest.find(filter) // No await here to add populate below
+
+    // Populate to get friends data
+    if (type === "SENT") {
+        // Only received users (to)
+        query.select("-from").populate("to", selectFields)
+    } else if (type === "RECEIVED") {
+        // Only sent users (from)
+        query.select("-to").populate("from", selectFields)
+    } else {
+        // BOTH
+        query.populate("from", selectFields)
+        query.populate("to", selectFields)
+    }
+
+    const list = await query.exec() // Execute query
+
+    return list
+}
+
 const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, message?: string) => {
     // Check is toUser exists
     const user = await User.exists({ _id: to })
@@ -91,28 +129,6 @@ const deleteFriendRequest = async (requestId: string, userId: Types.ObjectId) =>
 
     // Delete request
     await FriendRequest.findByIdAndDelete(requestId)
-}
-
-const getFriendRequestList = async (userId: Types.ObjectId, type: "SENT" | "RECEIVED" | "BOTH") => {
-    let filter: QueryFilter<FriendRequestType> = {}
-
-    if (type === "SENT") {
-        // SENT: Only Sent requests (from: userId)
-        filter = { from: userId }
-    } else if (type === "RECEIVED") {
-        // RECEIVED: Only Received requests (to: UserId)
-        filter = { to: userId }
-    } else {
-        // BOTH: Both Sent & Received
-        filter = {
-            $or: [{ from: userId }, { to: userId }],
-        }
-    }
-
-    // Friend request list result
-    const list = await FriendRequest.find(filter).sort({ createdAt: -1 })
-
-    return list
 }
 
 const deleteFriendship = async (userId: string, friendId: string) => {
