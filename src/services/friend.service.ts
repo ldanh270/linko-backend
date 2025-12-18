@@ -97,7 +97,11 @@ const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, mes
         throw new AppError(HttpStatusCode.CONFLICT, "Friend request already pending")
 
     // Create friend request in database
-    await FriendRequest.create({ from, to, message })
+    const request = await FriendRequest.create({ from, to, message })
+
+    await request.populate("to", "_id username displayName avatar.url")
+
+    return request
 }
 
 const createFriendship = async (requestId: string, userId: Types.ObjectId) => {

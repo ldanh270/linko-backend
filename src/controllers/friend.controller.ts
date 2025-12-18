@@ -58,9 +58,9 @@ const sendRequest = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Sender and receiver cannot be the same" })
 
     // Create friend request in database
-    await createFriendRequest(from, to, message)
+    const request = await createFriendRequest(from, to, message)
 
-    return res.status(200).json({ message: "Send friend request successfully" })
+    return res.status(201).json({ message: "Sent friend request successfully", request })
 }
 
 const unfriend = async (req: Request, res: Response) => {
@@ -72,6 +72,8 @@ const unfriend = async (req: Request, res: Response) => {
     if (!friendId) return res.status(400).json({ message: "Missing friend id" })
 
     await deleteFriendship(userId.toString(), friendId)
+
+    return res.status(204)
 }
 
 // Modify request
