@@ -31,7 +31,15 @@ const getSentRequests = async (req: Request, res: Response) => {
     await getFriendRequestList(userId, "SENT")
 }
 
-const getRecievedRequests = async (req: Request, res: Response) => {}
+const getRecievedRequests = async (req: Request, res: Response) => {
+    const userId = req.user._id
+
+    // Validate
+    if (!userId) return res.status(400).json({ message: "Missing user data" })
+
+    // Get requests current user sent
+    await getFriendRequestList(userId, "RECEIVED")
+}
 
 // Send request
 const sendRequest = async (req: Request, res: Response) => {
