@@ -25,9 +25,9 @@ type LoginUser = {
 }
 
 const createUser = async ({ username, password, email, displayName }: SignupUser) => {
-    // Check username or email already exists
     const duplicate = await User.findOne({ $or: [{ username: username }, { email: email }] })
 
+    // Duplicate username or email
     if (duplicate) {
         const field = duplicate.username === username ? "Username" : "Email"
 
@@ -48,6 +48,7 @@ const createUser = async ({ username, password, email, displayName }: SignupUser
 const verifyUser = async ({ username, password }: LoginUser) => {
     const user = await User.findOne({ username })
 
+    // User not exists
     if (!user) {
         throw new AppError(HttpStatusCode.UNAUTHORIZED, "Wrong username or password")
     }
@@ -55,6 +56,7 @@ const verifyUser = async ({ username, password }: LoginUser) => {
     // Compare input password with password in DB
     const isCorrect = await bcrypt.compare(password, user.hashPassword)
 
+    // Wrong password
     if (!isCorrect) {
         throw new AppError(HttpStatusCode.UNAUTHORIZED, "Wrong username or password")
     }
@@ -78,9 +80,8 @@ const verifyUser = async ({ username, password }: LoginUser) => {
     return { accessToken, refreshToken }
 }
 
-// Delete refresh token in database
 const deleteRefreshToken = async (token: string) => {
-    // Delete refresh token in DB
+    // Delete refresh token in database
     await Session.deleteOne({ refreshToken: token })
 }
 
@@ -88,12 +89,12 @@ const getNewAccessToken = async (token: string) => {
     // Compare with token in database
     const session = await Session.findOne({ refreshToken: token })
 
-    // Check if token not exists
+    // Session not exists (Invaild token)
     if (!session) {
         throw new AppError(HttpStatusCode.UNAUTHORIZED, "Incorrect or expired token")
     }
 
-    // Check if token expired
+    // Expired token
     if (session.expiresAt < new Date()) {
         throw new AppError(HttpStatusCode.UNAUTHORIZED, "Incorrect or expired token")
     }
