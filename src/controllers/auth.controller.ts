@@ -11,15 +11,16 @@ import {
 const signup = async (req: Request, res: Response) => {
     const { username, password, email, displayName } = req.body
 
+    // Create new user in database
     await createUser({ username, password, email, displayName })
-    // Return
+
     return res.status(201).json({ message: "User created successfully" })
 }
 
 const login = async (req: Request, res: Response) => {
-    // Get input
     const { username, password } = req.body
 
+    // Verify logged in user
     const tokens = await verifyUser({ username, password })
 
     // Response refresh token (in cookie)
@@ -38,7 +39,6 @@ const login = async (req: Request, res: Response) => {
 }
 
 const logout = async (req: Request, res: Response) => {
-    // Get refresh token in cookie
     const refreshToken = req.cookies?.refreshToken
 
     // Delete refresh token
@@ -53,12 +53,14 @@ const logout = async (req: Request, res: Response) => {
 }
 
 const refreshToken = async (req: Request, res: Response) => {
-    // Get refresh token from cookie
     const refreshToken = req.cookies?.refreshToken
 
+    // Validate
     if (!refreshToken) {
         return res.status(401).json({ message: "Token not exists" })
     }
+
+    // Get new Access token
     const accessToken = await getNewAccessToken(refreshToken)
 
     return res.status(200).json({ accessToken })
