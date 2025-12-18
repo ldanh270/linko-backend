@@ -7,6 +7,7 @@ import User from "../models/User"
 import AppError from "../utils/AppError"
 
 const getFriendList = async (userId: Types.ObjectId) => {
+    // Find user's friendships in database
     const friendShips = await Friendship.find({
         $or: [{ userA: userId }, { userB: userId }],
     })
@@ -21,6 +22,7 @@ const getFriendList = async (userId: Types.ObjectId) => {
     const friends = friendShips.map((fs) =>
         fs.userA._id.toString() === userId.toString() ? fs.userB : fs.userA,
     )
+
     return friends
 }
 
@@ -33,9 +35,9 @@ const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, mes
     let userA = from.toString()
     let userB = to.toString()
 
-    if (userA > userB) [userA, userB] = [userB, userA] // Swap userA & userB
+    if (userA > userB) [userA, userB] = [userB, userA] // Swap userA & userB if userA > userB
 
-    // Check is already friend or existing request
+    // Get already friend or existing request status
     const [alreadyFriend, existingRequest] = await Promise.all([
         Friendship.findOne({ userA, userB }),
         FriendRequest.findOne({
@@ -49,11 +51,14 @@ const createFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, mes
         }),
     ])
 
-    if (alreadyFriend) throw new AppError(HttpStatusCode.CONFLICT, "Users were already friends")
+    // Already be friends
+    if (alreadyFriend) throw new AppError(HttpStatusCode.CONFLICT, "Users are already friends")
+
+    // Already sent request
     if (existingRequest)
         throw new AppError(HttpStatusCode.CONFLICT, "Friend request already pending")
 
-    // Send request
+    // Create friend request in database
     FriendRequest.create({ from, to, message })
 }
 
