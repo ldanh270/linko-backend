@@ -103,7 +103,7 @@ const declineRequest = async (req: Request, res: Response) => {
     // Delete friend request
     await deleteFriendRequest(requestId, userId)
 
-    return res.status(200).json({ message: "Deny friend request successfully" })
+    return res.status(204)
 }
 
 export {
