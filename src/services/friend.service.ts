@@ -115,10 +115,21 @@ const getFriendRequestList = async (userId: Types.ObjectId, type: "SENT" | "RECE
     return list
 }
 
+const deleteFriendship = async (userId: string, friendId: string) => {
+    let [userA, userB] = [userId, friendId]
+
+    // Swap if userId > friendId (In database userA always < userB)
+    if (userA > userB) [userA, userB] = [userB, userA]
+
+    // Delete friendship
+    await Friendship.findOneAndDelete({ userA, userB })
+}
+
 export {
     createFriendRequest,
     createFriendship,
     deleteFriendRequest,
     getFriendList,
     getFriendRequestList,
+    deleteFriendship,
 }

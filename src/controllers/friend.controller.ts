@@ -4,6 +4,7 @@ import {
     createFriendRequest,
     createFriendship,
     deleteFriendRequest,
+    deleteFriendship,
     getFriendList,
     getFriendRequestList,
 } from "../services/friend.service"
@@ -13,7 +14,7 @@ const getAllFriends = async (req: Request, res: Response) => {
     const userId = req.user._id
 
     // Validate
-    if (!userId) return res.status(400).json({ message: "Missing userId" })
+    if (!userId) return res.status(400).json({ message: "Missing user data" })
 
     // Get friend list of current user
     const list = await getFriendList(userId)
@@ -59,7 +60,16 @@ const sendRequest = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "Send friend request successfully" })
 }
 
-const unfriend = async (req: Request, res: Response) => {}
+const unfriend = async (req: Request, res: Response) => {
+    const userId = req.user._id
+    const { friendId } = req.params
+
+    // Validate
+    if (!userId) return res.status(400).json({ message: "Missing user data" })
+    if (!friendId) return res.status(400).json({ message: "Missing friend id" })
+
+    await deleteFriendship(userId.toString(), friendId)
+}
 
 // Modify request
 const acceptRequest = async (req: Request, res: Response) => {
@@ -67,7 +77,7 @@ const acceptRequest = async (req: Request, res: Response) => {
     const { requestId } = req.params
 
     // Validate
-    if (!userId) return res.status(401).json({ message: "Unauthorized" })
+    if (!userId) return res.status(400).json({ message: "Missing user data" })
     if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
     // Create friendship & Delete friend request
@@ -81,7 +91,7 @@ const declineRequest = async (req: Request, res: Response) => {
     const { requestId } = req.params
 
     // Validate
-    if (!userId) return res.status(401).json({ message: "Unauthorized" })
+    if (!userId) return res.status(400).json({ message: "Missing user data" })
     if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
     // Delete friend request
