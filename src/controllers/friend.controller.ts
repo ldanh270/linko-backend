@@ -5,6 +5,7 @@ import {
     createFriendship,
     deleteFriendRequest,
     getFriendList,
+    getFriendRequestList,
 } from "../services/friend.service"
 
 // Get data
@@ -20,7 +21,15 @@ const getAllFriends = async (req: Request, res: Response) => {
     return res.status(200).json({ list })
 }
 
-const getSentRequests = async (req: Request, res: Response) => {}
+const getSentRequests = async (req: Request, res: Response) => {
+    const userId = req.user._id
+
+    // Validate
+    if (!userId) return res.status(400).json({ message: "Missing user data" })
+
+    // Get requests current user sent
+    await getFriendRequestList(userId, "SENT")
+}
 
 const getRecievedRequests = async (req: Request, res: Response) => {}
 

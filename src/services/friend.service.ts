@@ -1,7 +1,7 @@
-import { Types } from "mongoose"
+import { QueryFilter, Types } from "mongoose"
 
 import { HttpStatusCode } from "../config/constants/httpStatusCode"
-import FriendRequest from "../models/FriendRequest"
+import FriendRequest, { FriendRequestType } from "../models/FriendRequest"
 import Friendship from "../models/Friendship"
 import User from "../models/User"
 import AppError from "../utils/AppError"
@@ -93,4 +93,32 @@ const deleteFriendRequest = async (requestId: string, userId: Types.ObjectId) =>
     await FriendRequest.findByIdAndDelete(requestId)
 }
 
-export { createFriendRequest, createFriendship, deleteFriendRequest, getFriendList }
+const getFriendRequestList = async (userId: Types.ObjectId, type: "SENT" | "RECEIVED" | "BOTH") => {
+    let filter: QueryFilter<FriendRequestType> = {}
+
+    if (type === "SENT") {
+        // SENT: Only Sent requests (from: userId)
+        filter = { from: userId }
+    } else if (type === "RECEIVED") {
+        // RECEIVED: Only Received requests (to: UserId)
+        filter = { to: userId }
+    } else {
+        // BOTH: Both Sent & Received
+        filter = {
+            $or: [{ from: userId }, { to: userId }],
+        }
+    }
+
+    // Friend request list result
+    const list = await FriendRequest.find(filter).sort({ createdAt: -1 })
+
+    return list
+}
+
+export {
+    createFriendRequest,
+    createFriendship,
+    deleteFriendRequest,
+    getFriendList,
+    getFriendRequestList,
+}
