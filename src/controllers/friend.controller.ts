@@ -11,7 +11,12 @@ import {
 const getAllFriends = async (req: Request, res: Response) => {
     const userId = req.user._id
 
+    // Validate
+    if (!userId) return res.status(400).json({ message: "Missing userId" })
+
+    // Get friend list of current user
     const list = await getFriendList(userId)
+
     return res.status(200).json({ list })
 }
 
@@ -21,7 +26,6 @@ const getRecievedRequests = async (req: Request, res: Response) => {}
 
 // Send request
 const sendRequest = async (req: Request, res: Response) => {
-    // Get input data (from, to, message) from req
     const from = req.user._id
     const { to, message } = req.body
 
@@ -32,7 +36,9 @@ const sendRequest = async (req: Request, res: Response) => {
     if (from === to)
         return res.status(400).json({ message: "Sender and receiver cannot be the same" })
 
+    // Create friend request in database
     await createFriendRequest(from, to, message)
+
     return res.status(200).json({ message: "Send friend request successfully" })
 }
 
@@ -47,7 +53,9 @@ const acceptRequest = async (req: Request, res: Response) => {
     if (!userId) return res.status(401).json({ message: "Unauthorized" })
     if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
+    // Create friendship & Delete friend request
     await createFriendship(requestId, userId)
+
     return res.status(200).json({ message: "Accept friend request successfully" })
 }
 
@@ -59,7 +67,9 @@ const declineRequest = async (req: Request, res: Response) => {
     if (!userId) return res.status(401).json({ message: "Unauthorized" })
     if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
+    // Delete friend request
     await deleteFriendRequest(requestId, userId)
+
     return res.status(200).json({ message: "Deny friend request successfully" })
 }
 
