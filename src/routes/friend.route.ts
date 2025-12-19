@@ -1,36 +1,32 @@
 import express from "express"
 
-import {
-    acceptRequest,
-    declineRequest,
-    getAllFriends,
-    getRecievedRequests,
-    getSentRequests,
-    sendRequest,
-    unfriend,
-} from "../controllers/friend.controller"
+import { FriendController } from "../controllers/friend.controller"
+import { FriendService } from "../services/friend.service"
 
 const friendRoutes = express.Router()
 
+const service = new FriendService()
+const controller = new FriendController(service)
+
 // List friends of current user
-friendRoutes.get("/", getAllFriends)
+friendRoutes.get("/", controller.getAllFriends)
 
 // List request that current user sent
-friendRoutes.get("/sent", getSentRequests)
+friendRoutes.get("/sent", controller.getSentRequests)
 
 // List request that current user received
-friendRoutes.get("/received", getRecievedRequests)
+friendRoutes.get("/received", controller.getRecievedRequests)
 
 // Send friend request for specific user
-friendRoutes.post("/sent", sendRequest)
+friendRoutes.post("/sent", controller.sendFriendRequest)
 
 // Unfriend
-friendRoutes.delete("/:friendId", unfriend)
+friendRoutes.delete("/:friendId", controller.unfriend)
 
 // Accept request
-friendRoutes.post("/:requestId/accept", acceptRequest)
+friendRoutes.post("/:requestId/accept", controller.acceptRequest)
 
 // Decline request
-friendRoutes.post("/:requestId/accept", declineRequest)
+friendRoutes.post("/:requestId/accept", controller.declineRequest)
 
 export default friendRoutes

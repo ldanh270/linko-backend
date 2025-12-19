@@ -1,117 +1,104 @@
 import { Request, Response } from "express"
 
-import {
-    createFriendRequest,
-    createFriendship,
-    deleteFriendRequest,
-    deleteFriendship,
-    getFriendList,
-    getFriendRequestList,
-} from "../services/friend.service"
+import { FriendService } from "../services/friend.service"
 
-// Get data
-const getAllFriends = async (req: Request, res: Response) => {
-    const userId = req.user._id
+export class FriendController {
+    constructor(private readonly service: FriendService) {}
 
-    // Validate
-    if (!userId) return res.status(400).json({ message: "Missing user data" })
+    // Get data
+    getAllFriends = async (req: Request, res: Response) => {
+        const userId = req.user._id
 
-    // Get friend list of current user
-    const list = await getFriendList(userId)
+        // Validate
+        if (!userId) return res.status(400).json({ message: "Missing user data" })
 
-    return res.status(200).json({ list })
-}
+        // Get friend list of current user
+        const list = await this.service.getAllFriends(userId)
 
-const getSentRequests = async (req: Request, res: Response) => {
-    const userId = req.user._id
+        return res.status(200).json({ list })
+    }
 
-    // Validate
-    if (!userId) return res.status(400).json({ message: "Missing user data" })
+    getSentRequests = async (req: Request, res: Response) => {
+        const userId = req.user._id
 
-    // Get requests current user sent
-    const list = await getFriendRequestList(userId, "SENT")
+        // Validate
+        if (!userId) return res.status(400).json({ message: "Missing user data" })
 
-    return res.status(200).json({ list })
-}
+        // Get requests current user sent
+        const list = await this.service.getAllFriendRequests(userId, "SENT")
 
-const getRecievedRequests = async (req: Request, res: Response) => {
-    const userId = req.user._id
+        return res.status(200).json({ list })
+    }
 
-    // Validate
-    if (!userId) return res.status(400).json({ message: "Missing user data" })
+    getRecievedRequests = async (req: Request, res: Response) => {
+        const userId = req.user._id
 
-    // Get requests current user sent
-    const list = await getFriendRequestList(userId, "RECEIVED")
+        // Validate
+        if (!userId) return res.status(400).json({ message: "Missing user data" })
 
-    return res.status(200).json({ list })
-}
+        // Get requests current user sent
+        const list = await this.service.getAllFriendRequests(userId, "RECEIVED")
 
-// Send request
-const sendRequest = async (req: Request, res: Response) => {
-    const from = req.user._id
-    const { to, message } = req.body
+        return res.status(200).json({ list })
+    }
 
-    // Validate
-    if (!from) return res.status(401).json({ message: "Unauthorized" })
-    if (!to) return res.status(400).json({ message: "Missing sendTo" })
+    // Send request
+    sendFriendRequest = async (req: Request, res: Response) => {
+        const from = req.user._id
+        const { to, message } = req.body
 
-    if (from === to)
-        return res.status(400).json({ message: "Sender and receiver cannot be the same" })
+        // Validate
+        if (!from) return res.status(401).json({ message: "Unauthorized" })
+        if (!to) return res.status(400).json({ message: "Missing sendTo" })
 
-    // Create friend request in database
-    const request = await createFriendRequest(from, to, message)
+        if (from === to)
+            return res.status(400).json({ message: "Sender and receiver cannot be the same" })
 
-    return res.status(201).json({ message: "Sent friend request successfully", request })
-}
+        // Create friend request in database
+        const request = await this.service.sendFriendRequest(from, to, message)
 
-const unfriend = async (req: Request, res: Response) => {
-    const userId = req.user._id
-    const { friendId } = req.params
+        return res.status(201).json({ message: "Sent friend request successfully", request })
+    }
 
-    // Validate
-    if (!userId) return res.status(400).json({ message: "Missing user data" })
-    if (!friendId) return res.status(400).json({ message: "Missing friend id" })
+    unfriend = async (req: Request, res: Response) => {
+        const userId = req.user._id
+        const { friendId } = req.params
 
-    await deleteFriendship(userId.toString(), friendId)
+        // Validate
+        if (!userId) return res.status(400).json({ message: "Missing user data" })
+        if (!friendId) return res.status(400).json({ message: "Missing friend id" })
 
-    return res.status(204)
-}
+        await this.service.unfriend(userId.toString(), friendId)
 
-// Modify request
-const acceptRequest = async (req: Request, res: Response) => {
-    const userId = req.user._id
-    const { requestId } = req.params
+        return res.status(204)
+    }
 
-    // Validate
-    if (!userId) return res.status(400).json({ message: "Missing user data" })
-    if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
+    // Modify request
+    acceptRequest = async (req: Request, res: Response) => {
+        const userId = req.user._id
+        const { requestId } = req.params
 
-    // Create friendship & Delete friend request
-    const friendship = await createFriendship(requestId, userId)
+        // Validate
+        if (!userId) return res.status(400).json({ message: "Missing user data" })
+        if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
-    return res.status(201).json({ message: "Accept friend request successfully", friendship })
-}
+        // Create friendship & Delete friend request
+        const friendship = await this.service.acceptRequest(requestId, userId)
 
-const declineRequest = async (req: Request, res: Response) => {
-    const userId = req.user._id
-    const { requestId } = req.params
+        return res.status(201).json({ message: "Accept friend request successfully", friendship })
+    }
 
-    // Validate
-    if (!userId) return res.status(400).json({ message: "Missing user data" })
-    if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
+    declineRequest = async (req: Request, res: Response) => {
+        const userId = req.user._id
+        const { requestId } = req.params
 
-    // Delete friend request
-    await deleteFriendRequest(requestId, userId)
+        // Validate
+        if (!userId) return res.status(400).json({ message: "Missing user data" })
+        if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
-    return res.status(204)
-}
+        // Delete friend request
+        await this.service.declineRequest(requestId, userId)
 
-export {
-    getAllFriends,
-    unfriend,
-    getSentRequests,
-    sendRequest,
-    getRecievedRequests,
-    acceptRequest,
-    declineRequest,
+        return res.status(204)
+    }
 }
