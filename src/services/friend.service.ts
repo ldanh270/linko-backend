@@ -7,7 +7,7 @@ import User from "../models/User"
 import AppError from "../utils/AppError"
 
 export class FriendService {
-    getAllFriends = async (userId: Types.ObjectId) => {
+    getAllFriends = async (userId: string) => {
         // Find user's friendships in database
         const friendShips = await Friendship.find({
             $or: [{ userA: userId }, { userB: userId }],
@@ -27,7 +27,7 @@ export class FriendService {
         return friends
     }
 
-    getAllFriendRequests = async (userId: Types.ObjectId, type: "SENT" | "RECEIVED" | "BOTH") => {
+    getAllFriendRequests = async (userId: string, type: "SENT" | "RECEIVED" | "BOTH") => {
         let filter: QueryFilter<FriendRequestType> = {}
         const selectFields = "_id username displayName avatar.url"
 
@@ -65,7 +65,7 @@ export class FriendService {
         return list
     }
 
-    sendFriendRequest = async (from: Types.ObjectId, to: Types.ObjectId, message?: string) => {
+    sendFriendRequest = async (from: string, to: string, message?: string) => {
         // Check is toUser exists
         const user = await User.exists({ _id: to })
         if (!user) throw new AppError(404, "User not exists")
@@ -105,7 +105,7 @@ export class FriendService {
         return request
     }
 
-    acceptRequest = async (requestId: string, userId: Types.ObjectId) => {
+    acceptRequest = async (requestId: string, userId: string) => {
         const friendRequest = await FriendRequest.findOne({ _id: requestId })
 
         // Validate
@@ -136,7 +136,7 @@ export class FriendService {
         return friendship
     }
 
-    declineRequest = async (requestId: string, userId: Types.ObjectId) => {
+    declineRequest = async (requestId: string, userId: string) => {
         const friendRequest = await FriendRequest.findOne({ _id: requestId })
 
         // Validate

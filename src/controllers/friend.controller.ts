@@ -13,7 +13,7 @@ export class FriendController {
         if (!userId) return res.status(400).json({ message: "Missing user data" })
 
         // Get friend list of current user
-        const list = await this.service.getAllFriends(userId)
+        const list = await this.service.getAllFriends(userId.toString())
 
         return res.status(200).json({ list })
     }
@@ -25,7 +25,7 @@ export class FriendController {
         if (!userId) return res.status(400).json({ message: "Missing user data" })
 
         // Get requests current user sent
-        const list = await this.service.getAllFriendRequests(userId, "SENT")
+        const list = await this.service.getAllFriendRequests(userId.toString(), "SENT")
 
         return res.status(200).json({ list })
     }
@@ -37,7 +37,7 @@ export class FriendController {
         if (!userId) return res.status(400).json({ message: "Missing user data" })
 
         // Get requests current user sent
-        const list = await this.service.getAllFriendRequests(userId, "RECEIVED")
+        const list = await this.service.getAllFriendRequests(userId.toString(), "RECEIVED")
 
         return res.status(200).json({ list })
     }
@@ -55,7 +55,7 @@ export class FriendController {
             return res.status(400).json({ message: "Sender and receiver cannot be the same" })
 
         // Create friend request in database
-        const request = await this.service.sendFriendRequest(from, to, message)
+        const request = await this.service.sendFriendRequest(from.toString(), to, message)
 
         return res.status(201).json({ message: "Sent friend request successfully", request })
     }
@@ -83,7 +83,7 @@ export class FriendController {
         if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
         // Create friendship & Delete friend request
-        const friendship = await this.service.acceptRequest(requestId, userId)
+        const friendship = await this.service.acceptRequest(requestId, userId.toString())
 
         return res.status(201).json({ message: "Accept friend request successfully", friendship })
     }
@@ -97,7 +97,7 @@ export class FriendController {
         if (!requestId) return res.status(400).json({ message: "Missing friend request id" })
 
         // Delete friend request
-        await this.service.declineRequest(requestId, userId)
+        await this.service.declineRequest(requestId, userId.toString())
 
         return res.status(204)
     }
