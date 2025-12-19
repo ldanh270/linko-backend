@@ -1,21 +1,25 @@
 import express from "express"
 
-import { login, logout, refreshToken, signup } from "../controllers/auth.controller"
+import { AuthController } from "../controllers/auth.controller"
 import validate from "../middlewares/validate"
 import { loginSchema, signupSchema } from "../schemas/auth.schema"
+import { AuthService } from "../services/auth.service"
 
 const authRoutes = express.Router()
 
+const service = new AuthService()
+const controller = new AuthController(service)
+
 // Signup
-authRoutes.post("/signup", validate(signupSchema), signup)
+authRoutes.post("/signup", validate(signupSchema), controller.signup)
 
 // Login
-authRoutes.post("/login", validate(loginSchema), login)
+authRoutes.post("/login", validate(loginSchema), controller.login)
 
 // Logout
-authRoutes.post("/logout", logout)
+authRoutes.post("/logout", controller.logout)
 
 // Use Refresh token to get Access token
-authRoutes.post("/refresh-token", refreshToken)
+authRoutes.post("/refresh-token", controller.getNewToken)
 
 export default authRoutes
