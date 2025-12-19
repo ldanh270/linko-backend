@@ -1,15 +1,14 @@
 import express from "express"
 
-import { sendDirectMessage, sendGroupMessage } from "../../controllers/message.controller"
+import { sendMessage } from "../controllers/message.controller"
 
-const messageRoutes = express.Router({ mergeParams: true })
+const messageRoutes = express.Router()
 
 // List of newest messages in specific conversation
-messageRoutes.get("/", () => {})
+messageRoutes.get("/:conversationId", () => {})
 
 // Send new message to conversation
-messageRoutes.post("/direct", sendDirectMessage)
-messageRoutes.post("/group", sendGroupMessage)
+messageRoutes.post("/", sendMessage)
 
 // Edit a specific message in conversation
 messageRoutes.put("/:messageId", () => {})

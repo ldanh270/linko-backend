@@ -1,5 +1,5 @@
-const sendDirectMessage = async () => {}
+import { Request, Response } from "express"
 
-const sendGroupMessage = async () => {}
+const sendMessage = async (req: Request, res: Response) => {}
 
-export { sendDirectMessage, sendGroupMessage }
+export { sendMessage }

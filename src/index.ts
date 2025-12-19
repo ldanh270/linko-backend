@@ -8,6 +8,7 @@ import protectRoutes from "./middlewares/protectRoutes"
 import authRouters from "./routes/auth.route"
 import conversationRouters from "./routes/conversation.route"
 import friendRouters from "./routes/friend.route"
+import messageRoutes from "./routes/message.route"
 import userRouters from "./routes/user.route"
 
 /**
@@ -39,6 +40,7 @@ app.use("/api/auth", authRouters)
 app.use(protectRoutes)
 
 app.use("/api/conversations", conversationRouters)
+app.use("/api/messages", messageRoutes)
 app.use("/api/users", userRouters)
 app.use("/api/friends", friendRouters)
 
