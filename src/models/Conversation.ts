@@ -110,10 +110,12 @@ const conversationSchema = new mongoose.Schema(
             require: true,
         },
 
-        participant: {
-            type: participantSchema,
-            required: true,
-        },
+        participants: [
+            {
+                type: participantSchema,
+                required: true,
+            },
+        ],
 
         group: {
             type: groupSchema,
