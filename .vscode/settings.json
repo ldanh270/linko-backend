@@ -7,13 +7,21 @@
     "editor.detectIndentation": false,
     // "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
     "files.eol": "\n",
-    // Auto convert ~ to src
+    // Must use Alias (non-relative) instead of ../..
     "typescript.preferences.importModuleSpecifier": "non-relative",
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+
+    // Update path automatically when move file
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+
+    // Smart suggesting path
+    "typescript.suggest.paths": true,
+    "javascript.suggest.paths": true,
 
     // Optimize TypeScript performance
     "typescript.tsserver.maxTsServerMemory": 4096,
     "typescript.disableAutomaticTypeAcquisition": false,
-    "typescript.updateImportsOnFileMove.enabled": "always",
 
     // Optimize editor performance
     "editor.quickSuggestions": {
@@ -40,6 +48,7 @@
         "**/node_modules": true,
         "**/.next": true,
         "**/dist": true,
+        "**/coverage": true,
         "**/out": true,
         "**/.turbo": true,
         "**/bun.lockb": true,

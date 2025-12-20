@@ -1,13 +1,11 @@
 import mongoose from "mongoose"
 import { string } from "zod"
 
-import User from "./User"
-
 const sessionSchema = new mongoose.Schema(
     {
         userId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: User,
+            ref: "User",
             required: true,
             index: true,
         },

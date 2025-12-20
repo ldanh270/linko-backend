@@ -1,10 +1,11 @@
-import { Request, Response } from "express"
+import { REFRESH_TOKEN_TTL } from "#/config/constants/authTokens"
+import { AuthService } from "#/services/auth.service"
 
-import { REFRESH_TOKEN_TTL } from "../config/constants/authTokens"
-import { AuthService } from "../services/auth.service"
+import { Request, Response } from "express"
 
 export class AuthController {
     constructor(private readonly service: AuthService) {}
+
     signup = async (req: Request, res: Response) => {
         const { username, password, email, displayName } = req.body
 

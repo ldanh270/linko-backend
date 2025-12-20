@@ -1,5 +1,4 @@
 import mongoose, { InferSchemaType } from "mongoose"
-import { maxLength } from "zod"
 
 const friendRequestSchema = new mongoose.Schema(
     {

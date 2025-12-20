@@ -1,16 +1,16 @@
-import bcrypt from "bcrypt"
-import crypto from "crypto"
-import jwt from "jsonwebtoken"
-
 import {
     ACCESS_TOKEN_SECRET,
     ACCESS_TOKEN_TTL,
     REFRESH_TOKEN_TTL,
-} from "../config/constants/authTokens"
-import { HttpStatusCode } from "../config/constants/httpStatusCode"
-import Session from "../models/Session"
-import User from "../models/User"
-import AppError from "../utils/AppError"
+} from "#/config/constants/authTokens"
+import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import Session from "#/models/Session"
+import User from "#/models/User"
+import AppError from "#/utils/AppError"
+
+import bcrypt from "bcrypt"
+import crypto from "crypto"
+import jwt from "jsonwebtoken"
 
 type SignupUser = {
     username: string

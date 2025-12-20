@@ -1,7 +1,7 @@
-import express from "express"
+import { FriendController } from "#/controllers/friend.controller"
+import { FriendService } from "#/services/friend.service"
 
-import { FriendController } from "../controllers/friend.controller"
-import { FriendService } from "../services/friend.service"
+import express from "express"
 
 const friendRoutes = express.Router()
 

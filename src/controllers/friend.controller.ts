@@ -1,6 +1,6 @@
-import { Request, Response } from "express"
+import { FriendService } from "#/services/friend.service"
 
-import { FriendService } from "../services/friend.service"
+import { Request, Response } from "express"
 
 export class FriendController {
     constructor(private readonly service: FriendService) {}

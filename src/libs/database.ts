@@ -2,7 +2,7 @@ import mongoose from "mongoose"
 
 /**
  * Connect to database
- * - Using environment variables in .env file
+ * Using environment variables in .env file
  */
 const connectDB = async () => {
     try {

@@ -1,10 +1,10 @@
-import { QueryFilter, Types } from "mongoose"
+import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import FriendRequest, { FriendRequestType } from "#/models/FriendRequest"
+import Friendship from "#/models/Friendship"
+import User from "#/models/User"
+import AppError from "#/utils/AppError"
 
-import { HttpStatusCode } from "../config/constants/httpStatusCode"
-import FriendRequest, { FriendRequestType } from "../models/FriendRequest"
-import Friendship from "../models/Friendship"
-import User from "../models/User"
-import AppError from "../utils/AppError"
+import { QueryFilter, Types } from "mongoose"
 
 export class FriendService {
     getAllFriends = async (userId: string) => {

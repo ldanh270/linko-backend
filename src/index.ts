@@ -1,15 +1,15 @@
+import { connectDB } from "#/libs/database"
+import { globalErrorHandler } from "#/middlewares/globalErrorHandler"
+import protectRoutes from "#/middlewares/protectRoutes"
+import authRouters from "#/routes/auth.route"
+import conversationRouters from "#/routes/conversation.route"
+import friendRouters from "#/routes/friend.route"
+import messageRoutes from "#/routes/message.route"
+import userRouters from "#/routes/user.route"
+
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
 import express from "express"
-
-import { connectDB } from "./libs/database"
-import { globalErrorHandler } from "./middlewares/globalErrorHandler"
-import protectRoutes from "./middlewares/protectRoutes"
-import authRouters from "./routes/auth.route"
-import conversationRouters from "./routes/conversation.route"
-import friendRouters from "./routes/friend.route"
-import messageRoutes from "./routes/message.route"
-import userRouters from "./routes/user.route"
 
 /**
  * Server configurations
