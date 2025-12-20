@@ -1,4 +1,5 @@
 import { MessageController } from "#/controllers/message.controller"
+import { checkFriendship } from "#/middlewares/friend.middleware"
 import { ConversationService } from "#/services/conversation.service"
 import { MessageService } from "#/services/message.service"
 
@@ -16,7 +17,7 @@ const controller = new MessageController(messageService, conversationService)
 messageRoutes.get("/:conversationId", () => {})
 
 // Send new message to conversation
-messageRoutes.post("/", controller.sendMessage)
+messageRoutes.post("/", checkFriendship, controller.sendMessage)
 
 // Edit a specific message in conversation
 messageRoutes.put("/:messageId", () => {})
