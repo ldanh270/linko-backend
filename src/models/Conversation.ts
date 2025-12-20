@@ -39,7 +39,7 @@ const participantSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ["OWNER", "ADMIN", "MEMBER"],
+            enum: ["OWNER", "ADMIN", "MEMBER", "DIRECT"],
             required: true,
         },
 
@@ -104,19 +104,18 @@ const groupSchema = new mongoose.Schema(
 
 const conversationSchema = new mongoose.Schema(
     {
-        type: {
+        conversationType: {
             type: String,
-            enum: ["direct", "group"],
-            require: true,
+            enum: ["DIRECT", "GROUP"],
+            required: true,
         },
 
-        participants: [
-            {
-                type: participantSchema,
-                required: true,
-            },
-        ],
+        participants: {
+            type: [participantSchema],
+            required: true,
+        },
 
+        // Only for group conversations
         group: {
             type: groupSchema,
         },
@@ -143,8 +142,8 @@ const conversationSchema = new mongoose.Schema(
 // To get latest messsages when open app or open specific conversation
 conversationSchema.index({ "participant.userId": 1, "lastMessage.createdAt": -1 }) // participant.userId => ASC, lastMessage.createdAt => DESC
 
-const Conversation = mongoose.model("Conversation", conversationSchema)
+export type ConversationType = InferSchemaType<typeof conversationSchema>
+
+const Conversation = mongoose.model<ConversationType>("Conversation", conversationSchema)
 
 export default Conversation
-
-export type ConversationType = InferSchemaType<typeof conversationSchema>
