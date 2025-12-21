@@ -10,6 +10,8 @@ type MessageType = {
         url: string
         id: string
     }[]
+    replyTo?: string
+    mentions?: string[]
 }
 
 export class MessageService {
@@ -18,12 +20,16 @@ export class MessageService {
         senderId,
         content,
         attachments,
+        replyTo = "",
+        mentions = [],
     }: MessageType) => {
         const message = await Message.create({
             conversationId: conversationId,
             senderId: new mongoose.Types.ObjectId(senderId),
             content,
             attachments,
+            replyTo: new mongoose.Types.ObjectId(replyTo),
+            mentions: mentions ? mentions.map((id) => new mongoose.Types.ObjectId(id)) : [],
         })
 
         return message

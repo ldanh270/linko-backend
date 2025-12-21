@@ -51,6 +51,8 @@ export class MessageController {
             senderId,
             content,
             attachments,
+            replyTo,
+            mentions,
         })
 
         // Update conversation data after send message
