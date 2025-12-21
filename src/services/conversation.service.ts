@@ -1,4 +1,5 @@
 import Conversation from "#/models/Conversation"
+import Friendship from "#/models/Friendship"
 import { MessageService } from "#/services/message.service"
 import { updateConversationAfterCreateMessage } from "#/utils/messageHelper"
 
@@ -38,6 +39,20 @@ export class ConversationService {
         return conversation
     }
 
+    // Check user is conversation participants
+    isUserInConversation = async (conversationId: string, userId: string) => {
+        return Conversation.findOne({ _id: conversationId, participants: { $in: [userId] } })
+    }
+
+    // Check users are friends
+    isUsersBeFriends = async (userA: string, userB: string) => {
+        // Swap if userA > userB to indexing
+        if (userA > userB) [userA, userB] = [userB, userA]
+
+        return Friendship.findOne({ userA, userB })
+    }
+
+    // Create new conversation with first message
     createNewConversationWithMessage = async ({
         senderId,
         recipientId,

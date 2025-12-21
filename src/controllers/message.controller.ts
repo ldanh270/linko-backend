@@ -61,6 +61,11 @@ export class MessageController {
 
             if (!conversation)
                 throw new AppError(HttpStatusCode.NOT_FOUND, "Conversation not found")
+
+            // Check user is conversation participants
+            if (!(await this.conversationService.isUserInConversation(conversationId, senderId))) {
+                throw new AppError(HttpStatusCode.FORBIDDEN, "User not in conversation")
+            }
         } else {
             // If having recipientId
             conversation = await this.conversationService.findConversationByParticipants(
@@ -70,6 +75,10 @@ export class MessageController {
         }
 
         if (!conversation) {
+            // Check users are friends
+            if (!(await this.conversationService.isUsersBeFriends(senderId, recipientId)))
+                throw new AppError(HttpStatusCode.FORBIDDEN, "Users are not be friends")
+
             // Create new conversation & new message
             const [conversation, message] =
                 await this.conversationService.createNewConversationWithMessage({
@@ -82,7 +91,7 @@ export class MessageController {
         }
 
         /**
-         * CREATE MESSAGES
+         * CREATE MESSAGE
          */
 
         // Send message to conversation if exists conversation
