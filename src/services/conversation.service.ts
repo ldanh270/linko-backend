@@ -52,6 +52,11 @@ export class ConversationService {
         return Friendship.findOne({ userA, userB })
     }
 
+    // Get conversations list
+    getConversations = async (userId: string) => {
+        return Conversation.find({ "participants.userId": userId })
+    }
+
     // Create new conversation with first message
     createNewConversationWithMessage = async ({
         senderId,
