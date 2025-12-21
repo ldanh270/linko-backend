@@ -1,8 +1,6 @@
-import { HttpStatusCode } from "#/config/constants/httpStatusCode"
 import Conversation from "#/models/Conversation"
-import Message from "#/models/Message"
 import { MessageService } from "#/services/message.service"
-import AppError from "#/utils/AppError"
+import { updateConversationAfterCreateMessage } from "#/utils/messageHelper"
 
 import mongoose from "mongoose"
 
@@ -19,13 +17,24 @@ type InitConversationParamsType = {
 export class ConversationService {
     constructor(private readonly messageService: MessageService) {}
 
-    isConversationExisting = async (conversationId: string) => {
+    // Find conversation by id (string)
+    findConversationById = async (conversationId?: string) => {
         const conversation = await Conversation.findById(conversationId)
 
         // Conversation found
         if (!conversation) return null
 
         // Conversation not found
+        return conversation
+    }
+
+    // Find conversation by participants id (Only for direct message)
+    findConversationByParticipants = async (userId1: string, userId2: string) => {
+        const conversation = await Conversation.findOne({
+            participants: { $all: [userId1, userId2] },
+            type: "direct",
+        })
+
         return conversation
     }
 

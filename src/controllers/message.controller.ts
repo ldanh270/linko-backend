@@ -16,22 +16,58 @@ export class MessageController {
         const senderId = req.user._id.toString()
         const { conversationId, recipientId, content, replyTo, mentions, attachments } = req.body
 
-        // Message must have conversationId (For exists conversation) or recipientId (For the first direct message)
+        /**
+         * VALIDATE
+         */
+
+        // Message must have conversationId (for exists conversation) or recipientId (for the first direct message)
         if (!conversationId && !recipientId)
             throw new AppError(
                 HttpStatusCode.BAD_REQUEST,
                 "Either 'conversationId' or 'recipientId' is required",
             )
 
+        // Required only conversationId (for exists conversation) or recipientId (for new direct conversation), NOT BOTH
+        if (conversationId && recipientId)
+            throw new AppError(
+                HttpStatusCode.BAD_REQUEST,
+                "Only one of 'conversationId' or 'recipientId' can be provided, not both.",
+            )
+
         // Message must have either content or attachments
-        if (!content && !attachments)
+        if (!content?.trim() && !attachments)
             throw new AppError(
                 HttpStatusCode.BAD_REQUEST,
                 "Either 'content' or 'attachments' is required",
             )
 
-        // Create both conversation & message if not created
-        let conversation = await this.conversationService.isConversationExisting(conversationId)
+        // Recipient must different with sender
+        if (senderId === recipientId)
+            throw new AppError(
+                HttpStatusCode.BAD_REQUEST,
+                "Sender and recipient can not be the same",
+            )
+
+        /**
+         * CREATE CONVERSATION
+         */
+
+        // Create new conversation & add message if not created
+        let conversation = null
+
+        if (conversationId) {
+            // If having conversationId
+            conversation = await this.conversationService.findConversationById(conversationId)
+
+            if (!conversation)
+                throw new AppError(HttpStatusCode.NOT_FOUND, "Conversation not found")
+        } else {
+            // If having recipientId
+            conversation = await this.conversationService.findConversationByParticipants(
+                senderId,
+                recipientId,
+            )
+        }
 
         if (!conversation) {
             // Create new conversation & new message
@@ -45,9 +81,13 @@ export class MessageController {
             return res.status(HttpStatusCode.CREATED).json({ conversation, message })
         }
 
-        // Send message to exists conversation
+        /**
+         * CREATE MESSAGES
+         */
+
+        // Send message to conversation if exists conversation
         const message = await this.messageService.sendMessageToConversation({
-            conversationId,
+            conversationId: conversation._id,
             senderId,
             content,
             attachments,

@@ -87,5 +87,6 @@
     "editor.definitionLinkOpensInPeek": false,
     "typescript.tsserver.watchOptions": "vscode",
     "C_Cpp.intelliSenseMemoryLimit": 8192,
-    "editor.autoIndent": "advanced"
+    "editor.autoIndent": "advanced",
+    "editor.wordWrapColumn": 120
 }
