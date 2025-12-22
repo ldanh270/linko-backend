@@ -20,7 +20,7 @@ export class MessageService {
         senderId,
         content,
         attachments,
-        replyTo = "",
+        replyTo = null,
         mentions = [],
     }: MessageType) => {
         const message = await Message.create({

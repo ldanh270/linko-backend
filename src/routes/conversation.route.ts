@@ -18,7 +18,7 @@ conversationRoutes.get("/", controller.getConversations)
 conversationRoutes.get("/:conversationId", controller.getConversationInfo)
 
 // Create new conversation (Only for group conversation)
-conversationRoutes.post("/", controller.createNewConversation)
+conversationRoutes.post("/", controller.createNewGroup)
 
 // Update conversation info
 conversationRoutes.put("/:conversationId", controller.updateConversation)

@@ -5,6 +5,7 @@ import AppError from "#/utils/AppError"
 import { updateConversationAfterCreateMessage } from "#/utils/messageHelper"
 
 import { Request, Response } from "express"
+import mongoose from "mongoose"
 
 export class MessageController {
     constructor(
@@ -12,6 +13,7 @@ export class MessageController {
         private readonly conversationService: ConversationService,
     ) {}
 
+    // Send message to conversation (direct or group)
     sendMessage = async (req: Request, res: Response) => {
         const senderId = req.user._id.toString()
         const { conversationId, recipientId, content, replyTo, mentions, attachments } = req.body
@@ -80,12 +82,21 @@ export class MessageController {
                 throw new AppError(HttpStatusCode.FORBIDDEN, "Users are not be friends")
 
             // Create new conversation & new message
-            const [conversation, message] =
-                await this.conversationService.createNewConversationWithMessage({
-                    senderId,
-                    recipientId,
-                    content,
-                })
+            const conversationId = new mongoose.Types.ObjectId()
+
+            const message = await this.messageService.sendMessageToConversation({
+                conversationId,
+                senderId,
+                content,
+                replyTo,
+                mentions,
+            })
+
+            const conversation = await this.conversationService.createConversation({
+                userId: senderId,
+                type: "DIRECT",
+                memberIds: [senderId, recipientId],
+            })
 
             return res.status(HttpStatusCode.CREATED).json({ conversation, message })
         }
@@ -111,4 +122,16 @@ export class MessageController {
 
         return res.status(HttpStatusCode.CREATED).json({ conversation, message })
     }
+
+    // Get latest message in a conversation
+    getMessages = async (req: Request, res: Response) => {}
+
+    // Edit a specific message
+    editMessage = async (req: Request, res: Response) => {}
+
+    // Recall a specific message
+    recallMessage = async (req: Request, res: Response) => {}
+
+    // Hide a message for me
+    hideMessage = async (req: Request, res: Response) => {}
 }

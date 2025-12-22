@@ -21,7 +21,26 @@ export class ConversationController {
     getConversationInfo = async (req: Request, res: Response) => {}
 
     // Create new conversation (Only for group conversation)
-    createNewConversation = async (req: Request, res: Response) => {}
+    createNewGroup = async (req: Request, res: Response) => {
+        const userId = req.user._id.toString()
+        const { name, description, memberIds } = req.body
+
+        // Validate
+        if (!name || !memberIds || !Array.isArray(memberIds) || memberIds.length === 0) {
+            throw new AppError(HttpStatusCode.BAD_REQUEST, "Both 'name' & 'memberIds' is required")
+        }
+
+        // Create conversation
+        const conversation = await this.service.createConversation({
+            userId,
+            type: "GROUP",
+            memberIds,
+            name,
+            description,
+        })
+
+        return res.status(201).json({ conversation })
+    }
 
     // Update conversation info (Check for group & direct)
     updateConversation = async (req: Request, res: Response) => {}

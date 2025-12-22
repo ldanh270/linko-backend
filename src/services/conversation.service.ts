@@ -1,9 +1,10 @@
-import Conversation from "#/models/Conversation"
+import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import Conversation, { ConversationType } from "#/models/Conversation"
 import Friendship from "#/models/Friendship"
 import { MessageService } from "#/services/message.service"
-import { updateConversationAfterCreateMessage } from "#/utils/messageHelper"
+import AppError from "#/utils/AppError"
 
-import mongoose from "mongoose"
+import mongoose, { HydratedDocument } from "mongoose"
 
 type InitConversationParamsType = {
     senderId: string
@@ -32,8 +33,8 @@ export class ConversationService {
     // Find conversation by participants id (Only for direct message)
     findConversationByParticipants = async (userId1: string, userId2: string) => {
         const conversation = await Conversation.findOne({
-            participants: { $all: [userId1, userId2] },
-            type: "direct",
+            "participants.userId": { $all: [userId1, userId2] },
+            type: "DIRECT",
         })
 
         return conversation
@@ -41,7 +42,10 @@ export class ConversationService {
 
     // Check user is conversation participants
     isUserInConversation = async (conversationId: string, userId: string) => {
-        return Conversation.findOne({ _id: conversationId, participants: { $in: [userId] } })
+        return Conversation.findOne({
+            _id: conversationId,
+            "participants.userId": { $in: [userId] },
+        })
     }
 
     // Check users are friends
@@ -57,41 +61,81 @@ export class ConversationService {
         return Conversation.find({ "participants.userId": userId })
     }
 
-    // Create new conversation with first message
-    createNewConversationWithMessage = async ({
-        senderId,
-        recipientId,
-        content,
-        attachments,
-    }: InitConversationParamsType) => {
-        // Create conversation id for reference between conversation & message
-        const newConversationId = new mongoose.Types.ObjectId()
+    // Create new conversation
+    createConversation = async ({
+        conversationId,
+        userId,
+        type,
+        memberIds,
+        name,
+        description,
+    }: {
+        conversationId?: string
+        userId: string
+        type: "DIRECT" | "GROUP"
+        memberIds: string[]
+        name?: string
+        description?: string
+    }) => {
+        let conversation: HydratedDocument<ConversationType>
+        const _id = conversationId ? conversationId : new mongoose.Types.ObjectId()
 
-        // Create message with initial conversation id
-        const message = await this.messageService.sendMessageToConversation({
-            conversationId: newConversationId,
-            senderId,
-            content,
-            attachments,
-        })
+        const ownerIdStr = userId.toString()
 
-        // Create conversation with created message
-        const conversation = await Conversation.create({
-            _id: newConversationId,
-            conversationType: "DIRECT",
-            participants: [
-                { userId: new mongoose.Types.ObjectId(senderId), role: "DIRECT" },
-                { userId: new mongoose.Types.ObjectId(recipientId), role: "DIRECT" },
-            ],
-            lastMessage: {
-                messageId: message._id,
-                senderId: new mongoose.Types.ObjectId(senderId),
-                content,
-                createdAt: new Date(),
-            },
-            unreadCount: new Map(),
-        })
+        const uniqueMemberIds = [...new Set(memberIds)].filter((id) => id.toString() !== ownerIdStr)
 
-        return [conversation, message]
+        if (type === "DIRECT") {
+            const participantId = uniqueMemberIds[0]
+
+            conversation = await Conversation.findOne({
+                type: "DIRECT",
+                "participants.userId": { $all: [userId, participantId] },
+            })
+
+            if (!conversation) {
+                conversation = new Conversation({
+                    _id,
+                    conversationType: "DIRECT",
+                    participants: [
+                        { userId, role: "DIRECT" },
+                        { userId: participantId, role: "DIRECT" },
+                    ],
+                })
+            }
+
+            await conversation.save()
+        }
+
+        if (type === "GROUP") {
+            conversation = new Conversation({
+                _id,
+                conversationType: "GROUP",
+                group: {
+                    name,
+                    ownerId: userId,
+                    description,
+                },
+                participants: [
+                    { userId, role: "OWNER" },
+                    ...memberIds.map((id) => ({ userId: id, role: "MEMBER" })),
+                ],
+            })
+
+            await conversation.save()
+        }
+
+        // If type different with 'DIRECT' & 'GROUP'
+        if (!conversation)
+            throw new AppError(HttpStatusCode.BAD_REQUEST, "Conversation type invalid")
+
+        await conversation.populate([
+            // Select name & avatar url of participants in conversation
+            { path: "participants.userId", select: "displayName avatar.url" },
+            // Select name & avatar url of last message's sender
+            { path: "lastMessage.senderId", select: "displayName avatar.url" },
+            // TODO: Display avatar & display name of seen users
+        ])
+
+        return conversation
     }
 }

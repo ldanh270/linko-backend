@@ -14,15 +14,18 @@ const conversationService = new ConversationService(messageService)
 const controller = new MessageController(messageService, conversationService)
 
 // List of newest messages in specific conversation
-messageRoutes.get("/:conversationId", () => {})
+messageRoutes.get("/:conversationId", controller.getMessages)
 
 // Send new message to conversation
 messageRoutes.post("/", checkFriendship, controller.sendMessage)
 
 // Edit a specific message in conversation
-messageRoutes.put("/:messageId", () => {})
+messageRoutes.put("/:messageId", controller.editMessage)
 
-// Delete a specific message in conversation
-messageRoutes.delete("/:messageId", () => {})
+// Recall a specific message in conversation (For everyone)
+messageRoutes.delete("/:messageId", controller.recallMessage)
+
+// Hide a message in conversation (For only current user)
+messageRoutes.delete("/:messageId", controller.hideMessage)
 
 export default messageRoutes
