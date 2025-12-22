@@ -57,7 +57,7 @@ const participantSchema = new mongoose.Schema(
             default: Date.now,
         },
 
-        joinAt: {
+        joinedAt: {
             type: Date,
             default: Date.now,
         },
@@ -131,6 +131,12 @@ const conversationSchema = new mongoose.Schema(
             of: Number,
             default: {},
         },
+        seenBy: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
     },
 
     {

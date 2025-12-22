@@ -63,6 +63,13 @@ export class ConversationService {
     // Get conversations list
     getConversations = async (userId: string) => {
         return Conversation.find({ "participants.userId": userId })
+            .sort({
+                lastMessageAt: -1,
+                updatedAt: -1,
+            })
+            .populate({ path: "participants.userId", select: "displayName avatar.url" })
+            .populate({ path: "lastMessage.senderId", select: "displayName avatar.url" })
+            .populate({ path: "seenBy", select: "displayName avatar.url" })
     }
 
     // Create new conversation

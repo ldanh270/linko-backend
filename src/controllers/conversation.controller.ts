@@ -14,7 +14,24 @@ export class ConversationController {
         // Validate
         if (!userId) throw new AppError(HttpStatusCode.BAD_REQUEST, "Missing userId")
 
-        await this.service.getConversations(userId)
+        const conversations = await this.service.getConversations(userId)
+
+        const formatted = conversations.map((conversation) => {
+            const participants = (conversation.participants || []).map((p) => ({
+                _id: p.userId?._id,
+                displayName: p.userId?.displayName,
+                avatarUrl: p.user?.avatar?.url ?? null,
+                joinedAt: p.joinedAt,
+            }))
+
+            return {
+                ...conversation.toObject(),
+                unreadCount: conversation.unreadCount || {},
+                participants,
+            }
+        })
+
+        return res.status(HttpStatusCode.OK).json({ conversations: formatted })
     }
 
     // Group/Conversation info
@@ -26,9 +43,13 @@ export class ConversationController {
         const { name, description, memberIds } = req.body
 
         // Validate
-        if (!name || !memberIds || !Array.isArray(memberIds) || memberIds.length === 0) {
+        if (!name || !memberIds || !Array.isArray(memberIds)) {
             throw new AppError(HttpStatusCode.BAD_REQUEST, "Both 'name' & 'memberIds' is required")
         }
+
+        // group members = current user (1) + members
+        if (memberIds.length < 2)
+            throw new AppError(HttpStatusCode.BAD_REQUEST, "Group members must greater than 2")
 
         // Create conversation
         const conversation = await this.service.createConversation({
