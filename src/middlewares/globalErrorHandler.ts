@@ -39,9 +39,6 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
     if (process.env.NODE_ENV === "development") {
         sendErrorDev(err, res)
     } else {
-        // Copy object err để xử lý cho production
-        // Lưu ý: 1 số property của Error không copy được bằng spread operator {...err}
-        // nên gán đè message và name nếu cần thiết
         sendErrorClient(err, res)
     }
 }
