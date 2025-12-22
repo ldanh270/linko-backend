@@ -31,11 +31,15 @@ export class ConversationService {
     }
 
     // Find conversation by participants id (Only for direct message)
-    findConversationByParticipants = async (userId1: string, userId2: string) => {
+    findConversationByParticipants = async (users: string[]) => {
+        const members = [...new Set(users)].sort((a: string, b: string) => a.localeCompare(b))
+
         const conversation = await Conversation.findOne({
-            "participants.userId": { $all: [userId1, userId2] },
-            type: "DIRECT",
+            "participants.userId": { $all: members },
+            conversationType: "DIRECT",
         })
+
+        if (conversation) console.error("gm")
 
         return conversation
     }

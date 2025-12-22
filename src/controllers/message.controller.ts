@@ -44,7 +44,7 @@ export class MessageController {
             )
 
         // Recipient must different with sender
-        if (senderId === recipientId)
+        if (senderId.toString() === recipientId.toString())
             throw new AppError(
                 HttpStatusCode.BAD_REQUEST,
                 "Sender and recipient can not be the same",
@@ -70,10 +70,10 @@ export class MessageController {
             }
         } else {
             // If having recipientId
-            conversation = await this.conversationService.findConversationByParticipants(
+            conversation = await this.conversationService.findConversationByParticipants([
                 senderId,
                 recipientId,
-            )
+            ])
         }
 
         if (!conversation) {
@@ -82,21 +82,23 @@ export class MessageController {
                 throw new AppError(HttpStatusCode.FORBIDDEN, "Users are not be friends")
 
             // Create new conversation & new message
-            const conversationId = new mongoose.Types.ObjectId()
+            const conversation = await this.conversationService.createConversation({
+                userId: senderId,
+                type: "DIRECT",
+                memberIds: [senderId, recipientId],
+            })
 
             const message = await this.messageService.sendMessageToConversation({
-                conversationId,
+                conversationId: conversation._id,
                 senderId,
                 content,
                 replyTo,
                 mentions,
             })
 
-            const conversation = await this.conversationService.createConversation({
-                userId: senderId,
-                type: "DIRECT",
-                memberIds: [senderId, recipientId],
-            })
+            await updateConversationAfterCreateMessage({ conversation, message, senderId })
+
+            await conversation.save()
 
             return res.status(HttpStatusCode.CREATED).json({ conversation, message })
         }
@@ -116,7 +118,7 @@ export class MessageController {
         })
 
         // Update conversation data after send message
-        updateConversationAfterCreateMessage(conversation, message, senderId)
+        updateConversationAfterCreateMessage({ conversation, message, senderId })
 
         await conversation.save()
 

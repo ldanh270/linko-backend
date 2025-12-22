@@ -142,6 +142,17 @@ const conversationSchema = new mongoose.Schema(
 // To get latest messsages when open app or open specific conversation
 conversationSchema.index({ "participant.userId": 1, "lastMessage.createdAt": -1 }) // participant.userId => ASC, lastMessage.createdAt => DESC
 
+// To auto sort participants by id (a < b) for avoid duplicate
+conversationSchema.pre("save", function () {
+    if (this.conversationType === "DIRECT" && this.participants && this.participants.length > 0) {
+        this.participants.sort((a, b) => {
+            if (a.userId.toString() < b.userId.toString()) return -1
+            if (a.userId.toString() > b.userId.toString()) return 1
+            return 0
+        })
+    }
+})
+
 export type ConversationType = InferSchemaType<typeof conversationSchema>
 
 const Conversation = mongoose.model<ConversationType>("Conversation", conversationSchema)

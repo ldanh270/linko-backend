@@ -3,11 +3,15 @@ import { MessageType } from "#/models/Message"
 
 import { HydratedDocument } from "mongoose"
 
-export const updateConversationAfterCreateMessage = (
-    conversation: HydratedDocument<ConversationType>,
-    message: HydratedDocument<MessageType>,
-    senderId: string,
-) => {
+export const updateConversationAfterCreateMessage = ({
+    conversation,
+    message,
+    senderId,
+}: {
+    conversation: HydratedDocument<ConversationType>
+    message: HydratedDocument<MessageType>
+    senderId: string
+}) => {
     conversation.set({
         lastMessage: {
             _id: message._id,
