@@ -144,7 +144,8 @@ export class ConversationService {
             { path: "participants.userId", select: "displayName avatar.url" },
             // Select name & avatar url of last message's sender
             { path: "lastMessage.senderId", select: "displayName avatar.url" },
-            // TODO: Display avatar & display name of seen users
+            // Display avatar & display name of seen users
+            { path: "seenBy", select: "displayName avatar.url" },
         ])
 
         return conversation
