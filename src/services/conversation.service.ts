@@ -45,7 +45,13 @@ export class ConversationService {
     }
 
     // Check user is conversation participants
-    isUserInConversation = async (conversationId: string, userId: string) => {
+    isUserInConversation = async ({
+        conversationId,
+        userId,
+    }: {
+        conversationId: string
+        userId: string
+    }) => {
         return Conversation.findOne({
             _id: conversationId,
             "participants.userId": { $in: [userId] },

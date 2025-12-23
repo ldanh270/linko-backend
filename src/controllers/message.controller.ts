@@ -1,11 +1,13 @@
 import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import Message from "#/models/Message"
 import { ConversationService } from "#/services/conversation.service"
 import { MessageService } from "#/services/message.service"
 import AppError from "#/utils/AppError"
 import { updateConversationAfterCreateMessage } from "#/utils/messageHelper"
 
 import { Request, Response } from "express"
-import mongoose from "mongoose"
+
+type QueryType = { conversationId: string; createdAt?: Object }
 
 export class MessageController {
     constructor(
@@ -65,7 +67,12 @@ export class MessageController {
                 throw new AppError(HttpStatusCode.NOT_FOUND, "Conversation not found")
 
             // Check user is conversation participants
-            if (!(await this.conversationService.isUserInConversation(conversationId, senderId))) {
+            if (
+                !(await this.conversationService.isUserInConversation({
+                    conversationId,
+                    userId: senderId,
+                }))
+            ) {
                 throw new AppError(HttpStatusCode.FORBIDDEN, "User not in conversation")
             }
         } else {
@@ -126,7 +133,30 @@ export class MessageController {
     }
 
     // Get latest message in a conversation
-    getMessages = async (req: Request, res: Response) => {}
+    getMessages = async (req: Request, res: Response) => {
+        const { conversationId } = req.params
+        const userId = req.user?._id.toString()
+        const { limit = 50, cursor } = req.query
+
+        const query: QueryType = { conversationId }
+
+        // Check user is conversation participants
+        if (!(await this.conversationService.isUserInConversation({ conversationId, userId }))) {
+            throw new AppError(HttpStatusCode.FORBIDDEN, "User not in conversation")
+        }
+
+        // Get messages in conversation & update cursor
+        const [messages, nextCursor] = await this.messageService.getMessages({
+            query,
+            cursor: cursor as string,
+            limit: Number(limit),
+        })
+
+        return res.status(200).json({
+            messages,
+            nextCursor,
+        })
+    }
 
     // Edit a specific message
     editMessage = async (req: Request, res: Response) => {}
