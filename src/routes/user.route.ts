@@ -12,7 +12,7 @@ const controller = new UserController(service)
 userRoutes.get("/me", controller.getUserProfile)
 
 // Search for users by query
-userRoutes.get("/search", () => {})
+userRoutes.get("/search", controller.searchUsers)
 
 // View other user's profile
 userRoutes.get("/:userId", () => {})
