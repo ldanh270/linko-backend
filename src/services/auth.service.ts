@@ -35,12 +35,12 @@ export class AuthService {
             throw new AppError(HttpStatusCode.CONFLICT, `${field} already exists`)
         }
         // Encrypt password
-        const hashPassword = await bcrypt.hash(password, 10) // salt = 10 (encrypt password 2^10 times)
+        const hashedPassword = await bcrypt.hash(password, 10) // salt = 10 (encrypt password 2^10 times)
 
         // Create new User
         return await User.create({
             username,
-            hashPassword,
+            hashedPassword,
             email,
             displayName,
         })
@@ -55,7 +55,7 @@ export class AuthService {
         }
 
         // Compare input password with password in DB
-        const isCorrect = await bcrypt.compare(password, user.hashPassword)
+        const isCorrect = await bcrypt.compare(password, user.hashedPassword)
 
         // Wrong password
         if (!isCorrect) {
