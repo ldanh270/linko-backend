@@ -6,6 +6,7 @@ import AppError from "#/utils/AppError"
 import { updateConversationAfterCreateMessage } from "#/utils/messageHelper"
 
 import { Request, Response } from "express"
+import mongoose from "mongoose"
 
 type QueryType = { conversationId: string; createdAt?: Object }
 
@@ -84,30 +85,41 @@ export class MessageController {
         }
 
         if (!conversation) {
-            // Check users are friends
-            if (!(await this.conversationService.isUsersBeFriends(senderId, recipientId)))
-                throw new AppError(HttpStatusCode.FORBIDDEN, "Users are not be friends")
+            // Create transaction
+            const session = await mongoose.startSession()
+            session.startTransaction()
+            try {
+                // Check users are friends
+                if (!(await this.conversationService.isUsersBeFriends(senderId, recipientId)))
+                    throw new AppError(HttpStatusCode.FORBIDDEN, "Users are not be friends")
 
-            // Create new conversation & new message
-            const conversation = await this.conversationService.createConversation({
-                userId: senderId,
-                type: "DIRECT",
-                memberIds: [senderId, recipientId],
-            })
+                // Create new conversation & new message
+                const conversation = await this.conversationService.createConversation({
+                    userId: senderId,
+                    type: "DIRECT",
+                    memberIds: [senderId, recipientId],
+                })
 
-            const message = await this.messageService.sendMessageToConversation({
-                conversationId: conversation._id,
-                senderId,
-                content,
-                replyTo,
-                mentions,
-            })
+                const message = await this.messageService.sendMessageToConversation({
+                    conversationId: conversation._id,
+                    senderId,
+                    content,
+                    replyTo,
+                    mentions,
+                })
 
-            await updateConversationAfterCreateMessage({ conversation, message, senderId })
+                updateConversationAfterCreateMessage({ conversation, message, senderId })
 
-            await conversation.save()
+                await conversation.save()
 
-            return res.status(HttpStatusCode.CREATED).json({ conversation, message })
+                await session.commitTransaction()
+
+                return res.status(HttpStatusCode.CREATED).json({ conversation, message })
+            } catch (error) {
+                await session.abortTransaction()
+            } finally {
+                session.endSession()
+            }
         }
 
         /**
