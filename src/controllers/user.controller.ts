@@ -18,15 +18,16 @@ export class UserController {
 
     // GET /search
     searchUsers = async (req: Request, res: Response) => {
-        const { keywords, type } = req.query
+        const { type } = req.body
+        const { keyword } = req.query
 
-        if (!keywords) return res.status(HttpStatusCode.NO_CONTENT).json([])
+        if (!keyword) return res.status(HttpStatusCode.NO_CONTENT).json([])
 
         if (type !== "TYPING" && type !== "FULL")
             return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Invalid keyword type" })
 
         const users = await this.service.searchUserByKeywords({
-            keywords: keywords as string,
+            keyword: keyword as string,
             type,
         })
 
