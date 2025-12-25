@@ -15,7 +15,7 @@ userRoutes.get("/me", controller.getUserProfile)
 userRoutes.get("/search", controller.searchUsers)
 
 // View other user's profile
-userRoutes.get("/:userId", () => {})
+userRoutes.get("/:userId", controller.viewUserProfile)
 
 // Update current user profile details
 userRoutes.put("/me", () => {})

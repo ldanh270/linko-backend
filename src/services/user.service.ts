@@ -30,4 +30,10 @@ export class UserService {
 
         return users
     }
+
+    getUserInfo = async (userId: string) => {
+        const user = await User.findById({ _id: userId })
+
+        return user
+    }
 }
