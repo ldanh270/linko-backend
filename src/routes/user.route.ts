@@ -1,4 +1,7 @@
 import { UserController } from "#/controllers/user.controller"
+import { uploadCloud } from "#/middlewares/upload.middleware"
+import validate from "#/middlewares/validate"
+import { updateUserSchema } from "#/schemas/user.schema"
 import { UserService } from "#/services/user.service"
 
 import express from "express"
@@ -15,10 +18,18 @@ userRoutes.get("/me", controller.getUserProfile)
 userRoutes.get("/search", controller.searchUsers)
 
 // View other user's profile
-userRoutes.get("/:userId", controller.viewUserProfile)
+userRoutes.get("/:userId", controller.getUserByParams)
 
 // Update current user profile details
-userRoutes.put("/me", () => {})
+userRoutes.patch(
+    "/me",
+    uploadCloud.fields([
+        { name: "avatar", maxCount: 1 },
+        { name: "background", maxCount: 1 },
+    ]),
+    validate(updateUserSchema),
+    controller.updateProfile,
+)
 
 // Delete current user account
 userRoutes.delete("/", () => {})

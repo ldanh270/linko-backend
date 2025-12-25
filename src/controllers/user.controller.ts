@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import { UserService } from "#/services/user.service"
 import AppError from "#/utils/AppError"
 
@@ -35,7 +35,7 @@ export class UserController {
     }
 
     // GET /:userId
-    viewUserProfile = async (req: Request, res: Response) => {
+    getUserByParams = async (req: Request, res: Response) => {
         const { userId } = req.params
         const loginUserId = req.user?._id
 
@@ -44,12 +44,59 @@ export class UserController {
             return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
 
         // Get params user info
-        const user = await this.service.getUserInfo(userId)
+        const user = await this.service.getUserInfo({ userId })
 
         // User not found
         if (!user) return res.status(HttpStatusCode.NOT_FOUND).json({ message: "User not found" })
 
         // Return user to client
         return res.status(HttpStatusCode.OK).json({ user })
+    }
+
+    // PATCH /
+    updateProfile = async (req: Request, res: Response) => {
+        try {
+            const userId = req.user._id.toString()
+
+            /**
+             * Get file from upload middleware
+             * @fieldname key string (e.g. avatar, background, ...)
+             */
+            const files = req.files as { [fieldname: string]: Express.Multer.File[] }
+
+            /**
+             * VALIDATE
+             */
+            // TODO: Create check field helper
+
+            // Check authorization
+            if (!userId)
+                return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
+
+            // Check username
+
+            // Check email
+
+            // Check phone
+
+            /**
+             * LOGIC
+             */
+
+            // Update user info
+            const updatedUser = await this.service.updateUserInfo({
+                userId,
+                updateData: req.body, // Contains text fields & string/null
+                files: files,
+            })
+
+            // Update successfully
+            res.status(200).json({
+                message: "Cập nhật thông tin thành công",
+                data: updatedUser,
+            })
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
