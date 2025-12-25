@@ -1,4 +1,4 @@
-import { REGEX } from "#/config/constants/regex"
+import { REGEX } from "#/configs/constants/regex"
 
 import zod from "zod"
 

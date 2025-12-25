@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import { ConversationService } from "#/services/conversation.service"
 import AppError from "#/utils/AppError"
 

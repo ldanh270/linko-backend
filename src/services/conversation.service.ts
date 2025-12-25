@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import Conversation, { ConversationType } from "#/models/Conversation"
 import Friendship from "#/models/Friendship"
 import { MessageService } from "#/services/message.service"

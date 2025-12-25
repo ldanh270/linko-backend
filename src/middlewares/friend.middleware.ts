@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import Friendship from "#/models/Friendship"
 import AppError from "#/utils/AppError"
 

@@ -1,4 +1,4 @@
-import { REFRESH_TOKEN_TTL } from "#/config/constants/authTokens"
+import { REFRESH_TOKEN_TTL } from "#/configs/constants/authTokens"
 import { AuthService } from "#/services/auth.service"
 
 import { Request, Response } from "express"

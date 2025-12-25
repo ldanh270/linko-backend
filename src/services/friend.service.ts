@@ -1,4 +1,4 @@
-import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import FriendRequest, { FriendRequestType } from "#/models/FriendRequest"
 import Friendship from "#/models/Friendship"
 import User from "#/models/User"

@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN_SECRET } from "#/config/constants/authTokens"
+import { ACCESS_TOKEN_SECRET } from "#/configs/constants/authTokens"
 import User from "#/models/User"
 
 import { NextFunction, Request, Response } from "express"

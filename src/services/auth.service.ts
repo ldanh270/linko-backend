@@ -2,8 +2,8 @@ import {
     ACCESS_TOKEN_SECRET,
     ACCESS_TOKEN_TTL,
     REFRESH_TOKEN_TTL,
-} from "#/config/constants/authTokens"
-import { HttpStatusCode } from "#/config/constants/httpStatusCode"
+} from "#/configs/constants/authTokens"
+import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import Session from "#/models/Session"
 import User from "#/models/User"
 import AppError from "#/utils/AppError"
