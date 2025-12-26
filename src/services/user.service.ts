@@ -66,6 +66,8 @@ export class UserService {
      * @returns New user with updated info
      */
     updateUserInfo = async ({ userId, updateData, files }: UpdateUserParams) => {
+        // TODO: ADD REROLL LOGIC TO HANDLE DATA INCONSISTENCY
+
         //  Check user
         const user = await User.findById(userId)
 

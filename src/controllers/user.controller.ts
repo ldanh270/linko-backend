@@ -1,6 +1,8 @@
 import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
+import User from "#/models/User"
 import { UserService } from "#/services/user.service"
 import AppError from "#/utils/AppError"
+import { checkUniqueFields } from "#/utils/user.util"
 
 import { Request, Response } from "express"
 
@@ -56,7 +58,7 @@ export class UserController {
     // PATCH /
     updateProfile = async (req: Request, res: Response) => {
         try {
-            const userId = req.user._id.toString()
+            const user = req.user
 
             /**
              * Get file from upload middleware
@@ -67,17 +69,32 @@ export class UserController {
             /**
              * VALIDATE
              */
-            // TODO: Create check field helper
+            // TODO: Create check field helper for duplicate unique fields
 
             // Check authorization
-            if (!userId)
+            if (!user._id)
                 return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
 
             // Check username
 
+            const checkUsername = checkUniqueFields({ key: "username", value: user.username })
+
+            if (!checkUsername)
+                return res.status(HttpStatusCode.CONFLICT).json({ message: "Existing username" })
+
             // Check email
+            const checkEmail = checkUniqueFields({ key: "email", value: user.email })
+
+            if (!checkEmail)
+                return res.status(HttpStatusCode.CONFLICT).json({ message: "Existing email" })
 
             // Check phone
+            const checkPhone = checkUniqueFields({ key: "phone", value: user.phone })
+
+            if (!checkPhone)
+                return res
+                    .status(HttpStatusCode.CONFLICT)
+                    .json({ message: "Existing phone number" })
 
             /**
              * LOGIC
@@ -85,15 +102,14 @@ export class UserController {
 
             // Update user info
             const updatedUser = await this.service.updateUserInfo({
-                userId,
+                userId: user._id.toString(),
                 updateData: req.body, // Contains text fields & string/null
                 files: files,
             })
 
             // Update successfully
             res.status(200).json({
-                message: "Cập nhật thông tin thành công",
-                data: updatedUser,
+                user: updatedUser,
             })
         } catch (error) {
             console.log(error)
