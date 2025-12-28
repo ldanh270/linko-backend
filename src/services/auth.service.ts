@@ -6,7 +6,6 @@ import {
 import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import Session from "#/models/Session"
 import User from "#/models/User"
-import AppError from "#/utils/AppError"
 
 import bcrypt from "bcrypt"
 import crypto from "crypto"
@@ -32,7 +31,7 @@ export class AuthService {
         if (duplicate) {
             const field = duplicate.username === username ? "Username" : "Email"
 
-            throw new AppError(HttpStatusCode.CONFLICT, `${field} already exists`)
+            throw new Error(`${field} already exists`)
         }
         // Encrypt password
         const hashedPassword = await bcrypt.hash(password, 10) // salt = 10 (encrypt password 2^10 times)
@@ -51,7 +50,7 @@ export class AuthService {
 
         // User not exists
         if (!user) {
-            throw new AppError(HttpStatusCode.UNAUTHORIZED, "Wrong username or password")
+            throw new Error("Wrong username or password")
         }
 
         // Compare input password with password in DB
@@ -59,7 +58,7 @@ export class AuthService {
 
         // Wrong password
         if (!isCorrect) {
-            throw new AppError(HttpStatusCode.UNAUTHORIZED, "Wrong username or password")
+            throw new Error("Wrong username or password")
         }
 
         // Create access token
@@ -92,12 +91,12 @@ export class AuthService {
 
         // Session not exists (Invaild token)
         if (!session) {
-            throw new AppError(HttpStatusCode.UNAUTHORIZED, "Incorrect or expired token")
+            throw new Error("Incorrect or expired token")
         }
 
         // Expired token
         if (session.expiresAt < new Date()) {
-            throw new AppError(HttpStatusCode.UNAUTHORIZED, "Incorrect or expired token")
+            throw new Error("Incorrect or expired token")
         }
 
         // Create new access token

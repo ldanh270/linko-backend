@@ -3,7 +3,7 @@ import cloudinary from "#/configs/cloudinary.config"
 import multer from "multer"
 import { CloudinaryStorage } from "multer-storage-cloudinary"
 
-const sanitizeFilename = (name) => {
+const sanitizeFilename = (name: string) => {
     return name
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "") // Remove vietnamese sign

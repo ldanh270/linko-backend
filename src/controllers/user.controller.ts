@@ -1,7 +1,6 @@
 import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import User from "#/models/User"
 import { UserService } from "#/services/user.service"
-import AppError from "#/utils/AppError"
 import { checkUniqueFields } from "#/utils/user.util"
 
 import { Request, Response } from "express"
@@ -11,48 +10,67 @@ export class UserController {
 
     // GET /me
     getUserProfile = async (req: Request, res: Response) => {
-        const user = req.user
+        try {
+            const user = req.user
 
-        if (!user) throw new AppError(HttpStatusCode.UNAUTHORIZED, "Missing user data")
+            if (!user)
+                return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
 
-        return res.status(HttpStatusCode.OK).json({ user })
+            return res.status(HttpStatusCode.OK).json({ user })
+        } catch (error) {
+            console.error("UserController - getUserProfile error:" + (error as Error).message)
+            res.status(HttpStatusCode.INTERNAL_SERVER).json({ message: "Internal server error" })
+        }
     }
 
     // GET /search
     searchUsers = async (req: Request, res: Response) => {
-        const { type } = req.body
-        const { keyword } = req.query
+        try {
+            const { type } = req.body
+            const { keyword } = req.query
 
-        if (!keyword) return res.status(HttpStatusCode.NO_CONTENT).json([])
+            if (!keyword) return res.status(HttpStatusCode.NO_CONTENT).json([])
 
-        if (type !== "TYPING" && type !== "FULL")
-            return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "Invalid keyword type" })
+            if (type !== "TYPING" && type !== "FULL")
+                return res
+                    .status(HttpStatusCode.BAD_REQUEST)
+                    .json({ message: "Invalid keyword type" })
 
-        const users = await this.service.searchUserByKeywords({
-            keyword: keyword as string,
-            type,
-        })
+            const users = await this.service.searchUserByKeywords({
+                keyword: keyword as string,
+                type,
+            })
 
-        return res.status(HttpStatusCode.OK).json({ users })
+            return res.status(HttpStatusCode.OK).json({ users })
+        } catch (error) {
+            console.error("UserController - searchUsers error:" + (error as Error).message)
+            res.status(HttpStatusCode.INTERNAL_SERVER).json({ message: "Internal server error" })
+        }
     }
 
     // GET /:userId
     getUserByParams = async (req: Request, res: Response) => {
-        const { userId } = req.params
-        const loginUserId = req.user?._id
+        try {
+            const { userId } = req.params
+            const loginUserId = req.user?._id
 
-        // User not logged-in or missing user data
-        if (!loginUserId)
-            return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
+            // User not logged-in or missing user data
+            if (!loginUserId)
+                return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
 
-        // Get params user info
-        const user = await this.service.getUserInfo({ userId })
+            // Get params user info
+            const user = await this.service.getUserInfo({ userId })
 
-        // User not found
-        if (!user) return res.status(HttpStatusCode.NOT_FOUND).json({ message: "User not found" })
+            // User not found
+            if (!user)
+                return res.status(HttpStatusCode.NOT_FOUND).json({ message: "User not found" })
 
-        // Return user to client
-        return res.status(HttpStatusCode.OK).json({ user })
+            // Return user to client
+            return res.status(HttpStatusCode.OK).json({ user })
+        } catch (error) {
+            console.error("UserController - getUserByParams error:" + (error as Error).message)
+            res.status(HttpStatusCode.INTERNAL_SERVER).json({ message: "Internal server error" })
+        }
     }
 
     // PATCH /
@@ -120,7 +138,7 @@ export class UserController {
                 user: updatedUser,
             })
         } catch (error) {
-            console.error("UserController - updateProfile ERROR: ", error)
+            console.error("UserController - updateProfile ERROR: " + (error as Error).message)
             return res
                 .status(HttpStatusCode.INTERNAL_SERVER)
                 .json({ message: "Internal server error" })

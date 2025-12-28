@@ -45,7 +45,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"username\": \"ldanh270\",\r\n    \"password\": \"ADLlk!27@\"\r\n}",
+              "raw": "{\r\n    \"username\": \"test\",\r\n    \"password\": \"Abc1234@\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -69,10 +69,17 @@
           "name": "Refresh token",
           "id": "5ff9166c-c984-43c1-961e-47cb6e75b2ca",
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [],
             "url": {
-              "raw": ""
+              "raw": "{{base_url}}/auth/refresh-token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "auth",
+                "refresh-token"
+              ]
             }
           },
           "response": []
@@ -410,7 +417,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"name\": \"Front-end\",\r\n    \"type\": \"GROUP\",\r\n    \"memberIds\": [\r\n        \"6941067c0fccef682a083bd0\",\r\n        \"6947668d22a93f4cca25ec8b\"\r\n    ]\r\n}"
+              "raw": "{}"
             },
             "url": {
               "raw": "{{base_url}}/conversations/",
@@ -553,6 +560,60 @@
                   "value": null,
                   "disabled": true
                 }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Profile",
+          "id": "e3e8a331-4e9e-461c-b4b1-5000ca8a9254",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTQxMDY3YzBmY2NlZjY4MmEwODNiZDAiLCJpYXQiOjE3NjY5MzUxNTgsImV4cCI6MTc2NjkzNjA1OH0.jkzRiuXyHEqF63KbIKZlbmxvZ-Xfd5GtyloxXavFZFA",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "username",
+                  "value": "tester",
+                  "type": "text",
+                  "uuid": "69149477-ece7-4985-aaa0-2155961dd18a"
+                },
+                {
+                  "key": "displayName",
+                  "value": "Tester",
+                  "type": "text",
+                  "uuid": "61d57697-ea4a-4f17-a98c-2a34476010eb"
+                },
+                {
+                  "key": "avatar",
+                  "type": "file",
+                  "uuid": "343df143-9e94-4fb5-9ed2-b9116122232a",
+                  "src": [
+                    "postman-cloud:///1f0e395e-9699-4b50-8c2e-714268a22aa2"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/users/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "me"
               ]
             }
           },

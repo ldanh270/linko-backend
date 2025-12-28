@@ -1,6 +1,6 @@
 import { UserController } from "#/controllers/user.controller"
 import { uploadCloud } from "#/middlewares/upload.middleware"
-import validate from "#/middlewares/validate"
+import validate from "#/middlewares/validate.middleware"
 import { updateUserSchema } from "#/schemas/user.schema"
 import { UserService } from "#/services/user.service"
 

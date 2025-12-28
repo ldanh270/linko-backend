@@ -1,5 +1,5 @@
 import { AuthController } from "#/controllers/auth.controller"
-import validate from "#/middlewares/validate"
+import validate from "#/middlewares/validate.middleware"
 import { loginSchema, signupSchema } from "#/schemas/auth.schema"
 import { AuthService } from "#/services/auth.service"
 

@@ -1,37 +1,94 @@
 import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import { ConversationService } from "#/services/conversation.service"
-import AppError from "#/utils/AppError"
 
 import { Request, Response } from "express"
+import mongoose, { Date } from "mongoose"
+
+type PopulatedParticipantsType = {
+    userId: {
+        _id: mongoose.Types.ObjectId
+        avatar?: {
+            url?: string
+            id?: string
+        }
+        background?: {
+            url?: string
+            id?: string
+        }
+        displayName: string
+    }
+    role: "OWNER" | "ADMIN" | "MEMBER" | "DIRECT"
+    isArchived: boolean
+    mutedUntil: Date
+    clearedHistoryAt: Date
+    joinedAt: Date
+}
 
 export class ConversationController {
     constructor(private readonly service: ConversationService) {}
 
-    // List of recent conversations
+    /**
+     *
+     * @param req Current user id (res.user)
+     * @param res Latest conversation list (res.body)
+     */
     getConversations = async (req: Request, res: Response) => {
-        const userId = req.user._id.toString()
+        try {
+            const userId = req.user._id.toString()
 
-        // Validate
-        if (!userId) throw new AppError(HttpStatusCode.BAD_REQUEST, "Missing userId")
+            // Validate
+            if (!userId)
+                res.status(HttpStatusCode.UNAUTHORIZED).json({
+                    message: "Unauthorized",
+                })
+            // Get conversation list
+            const conversations = await this.service.getConversations(userId)
 
-        const conversations = await this.service.getConversations(userId)
+            // Return formatted conversation list to display
+            const formatted = conversations.map((conversation) => {
+                /**
+                 * Double casting to avoid conflict
+                 * Example:
+                 * - Mongoose return types - userId: mongoose.Types.ObjectId
+                 * - Self declare types - userId:
+                 *  {
+                 *      _id: mongoose.Types.ObjectId,
+                 *      avatar: {
+                 *          url: string,
+                 *          id: string
+                 *      }
+                 *  }
+                 *  => Must cast to unknown before self declare type
+                 */
+                const participantList =
+                    conversation.participants as unknown as PopulatedParticipantsType[]
 
-        const formatted = conversations.map((conversation) => {
-            const participants = (conversation.participants || []).map((p) => ({
-                _id: p.userId?._id,
-                displayName: p.userId?.displayName,
-                avatarUrl: p.user?.avatar?.url ?? null,
-                joinedAt: p.joinedAt,
-            }))
+                // Formatted participants
+                const participants = participantList.map((p: PopulatedParticipantsType) => ({
+                    _id: p.userId?._id,
+                    displayName: p.userId?.displayName,
+                    avatarUrl: p.userId?.avatar?.url ?? null,
+                    joinedAt: p.joinedAt,
+                }))
 
-            return {
-                ...conversation.toObject(),
-                unreadCount: conversation.unreadCount || {},
-                participants,
-            }
-        })
+                // Return conversations
+                return {
+                    // Other conversation data & remove trash meta-data of mongoose
+                    ...conversation.toObject(),
+                    unreadCount: conversation.unreadCount || {},
+                    // Formatted participants data
+                    participants,
+                }
+            })
 
-        return res.status(HttpStatusCode.OK).json({ conversations: formatted })
+            // Response formatted conversations
+            return res.status(HttpStatusCode.OK).json({ conversations: formatted })
+        } catch (error) {
+            console.error(
+                "ConversationController - getConversations error:" + (error as Error).message,
+            )
+            res.status(HttpStatusCode.INTERNAL_SERVER).json({ message: "Internal server error" })
+        }
     }
 
     // Group/Conversation info
@@ -39,28 +96,39 @@ export class ConversationController {
 
     // Create new conversation (Only for group conversation)
     createNewGroup = async (req: Request, res: Response) => {
-        const userId = req.user._id.toString()
-        const { name, description, memberIds } = req.body
+        try {
+            const userId = req.user._id.toString()
+            const { name, description, memberIds } = req.body
 
-        // Validate
-        if (!name || !memberIds || !Array.isArray(memberIds)) {
-            throw new AppError(HttpStatusCode.BAD_REQUEST, "Both 'name' & 'memberIds' is required")
+            // Validate
+            if (!name || !memberIds || !Array.isArray(memberIds)) {
+                return res
+                    .status(HttpStatusCode.BAD_REQUEST)
+                    .json({ message: "Both 'name' & 'memberIds' is required" })
+            }
+
+            // Group members must > 2 (group members = current user (1) + members)
+            if (memberIds.length < 2)
+                return res
+                    .status(HttpStatusCode.BAD_REQUEST)
+                    .json({ message: "Group members must greater than 2" })
+
+            // Create conversation
+            const conversation = await this.service.createConversation({
+                userId,
+                type: "GROUP",
+                memberIds,
+                name,
+                description,
+            })
+
+            return res.status(201).json({ conversation })
+        } catch (error) {
+            console.error(
+                "ConversationController - createNewGroup error:" + (error as Error).message,
+            )
+            res.status(HttpStatusCode.INTERNAL_SERVER).json({ message: "Internal server error" })
         }
-
-        // group members = current user (1) + members
-        if (memberIds.length < 2)
-            throw new AppError(HttpStatusCode.BAD_REQUEST, "Group members must greater than 2")
-
-        // Create conversation
-        const conversation = await this.service.createConversation({
-            userId,
-            type: "GROUP",
-            memberIds,
-            name,
-            description,
-        })
-
-        return res.status(201).json({ conversation })
     }
 
     // Update conversation info (Check for group & direct)

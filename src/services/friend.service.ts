@@ -2,7 +2,6 @@ import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import FriendRequest, { FriendRequestType } from "#/models/FriendRequest"
 import Friendship from "#/models/Friendship"
 import User from "#/models/User"
-import AppError from "#/utils/AppError"
 
 import { QueryFilter, Types } from "mongoose"
 
@@ -68,7 +67,7 @@ export class FriendService {
     sendFriendRequest = async (from: string, to: string, message?: string) => {
         // Check is toUser exists
         const user = await User.exists({ _id: to })
-        if (!user) throw new AppError(404, "User not exists")
+        if (!user) throw new Error("toUser not exists")
 
         // Swap by _id to check friendship existing
         let userA = from.toString()
@@ -91,11 +90,10 @@ export class FriendService {
         ])
 
         // Already be friends
-        if (alreadyFriend) throw new AppError(HttpStatusCode.CONFLICT, "Users are already friends")
+        if (alreadyFriend) throw new Error("Users are already friends")
 
         // Already sent request
-        if (existingRequest)
-            throw new AppError(HttpStatusCode.CONFLICT, "Friend request already pending")
+        if (existingRequest) throw new Error("Friend request already pending")
 
         // Create friend request in database
         const request = await FriendRequest.create({ from, to, message })
@@ -109,12 +107,11 @@ export class FriendService {
         const friendRequest = await FriendRequest.findOne({ _id: requestId })
 
         // Validate
-        if (!friendRequest)
-            throw new AppError(HttpStatusCode.NOT_FOUND, "Friend request not exists")
+        if (!friendRequest) throw new Error("Friend request not exists")
 
         // Only received user can be accept request
         if (userId.toString() !== friendRequest.to.toString())
-            throw new AppError(HttpStatusCode.FORBIDDEN, "Only invited user can be accept request")
+            throw new Error("Only invited user can be accept request")
 
         // Swap if userA > userB before create friendship
         let userA = userId.toString()
@@ -140,15 +137,11 @@ export class FriendService {
         const friendRequest = await FriendRequest.findOne({ _id: requestId })
 
         // Validate
-        if (!friendRequest)
-            throw new AppError(HttpStatusCode.NOT_FOUND, "Friend request not exists")
+        if (!friendRequest) throw new Error("Friend request not exists")
 
         // Only received user can be deny request
         if (userId.toString() !== friendRequest.to.toString())
-            throw new AppError(
-                HttpStatusCode.UNAUTHORIZED,
-                "Only invited user can be decline request",
-            )
+            throw new Error("Only invited user can be decline request")
 
         // Delete request
         await FriendRequest.findByIdAndDelete(requestId)

@@ -87,16 +87,21 @@ export class AuthController {
      * @param res New access token (res.body)
      */
     getNewToken = async (req: Request, res: Response) => {
-        const refreshToken = req.cookies?.refreshToken
+        try {
+            const refreshToken = req.cookies?.refreshToken
 
-        // Validate
-        if (!refreshToken) {
-            return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Token not exists" })
+            // Validate
+            if (!refreshToken) {
+                return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Token not exists" })
+            }
+
+            // Get new Access token
+            const accessToken = await this.service.getNewToken(refreshToken)
+
+            return res.status(HttpStatusCode.OK).json({ accessToken })
+        } catch (error) {
+            console.error("AuthController - getNewToken error:" + error)
+            res.status(HttpStatusCode.INTERNAL_SERVER).json({ message: "Internal server error" })
         }
-
-        // Get new Access token
-        const accessToken = await this.service.getNewToken(refreshToken)
-
-        return res.status(HttpStatusCode.OK).json({ accessToken })
     }
 }

@@ -1,3 +1,5 @@
+import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
+
 import { NextFunction, Request, Response } from "express"
 import { ZodError, ZodObject } from "zod"
 
@@ -10,19 +12,19 @@ const validate = (schema: ZodObject) => (req: Request, res: Response, next: Next
         })
 
         next()
-    } catch (err) {
-        if (err instanceof ZodError) {
-            const formattedErrors = err.issues.map((issue) => ({
+    } catch (error) {
+        if (error instanceof ZodError) {
+            const formattedErrors = error.issues.map((issue) => ({
                 field: issue.path.join("."),
                 message: issue.message,
             }))
 
-            return res.status(400).json({
+            return res.status(HttpStatusCode.BAD_REQUEST).json({
                 errors: formattedErrors,
             })
         }
 
-        return res.status(500).json({
+        return res.status(HttpStatusCode.INTERNAL_SERVER).json({
             message: "Internal server error",
         })
     }

@@ -1,6 +1,5 @@
 import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import Friendship from "#/models/Friendship"
-import AppError from "#/utils/AppError"
 
 import { NextFunction, Request, Response } from "express"
 
@@ -12,7 +11,8 @@ export const checkFriendship = async (req: Request, res: Response, next: NextFun
 
     const recipientId = req.body?.recipientId ?? null
 
-    if (!recipientId) throw new AppError(HttpStatusCode.BAD_REQUEST, "'recipientId' is required")
+    if (!recipientId)
+        return res.status(HttpStatusCode.BAD_REQUEST).json({ message: "'recipientId' is required" })
 
     if (recipientId) {
         const [userA, userB] = swap(me, recipientId)
@@ -20,7 +20,9 @@ export const checkFriendship = async (req: Request, res: Response, next: NextFun
         const isFriend = await Friendship.findOne({ userA, userB })
 
         if (!isFriend)
-            throw new AppError(HttpStatusCode.FORBIDDEN, "You are not friends with this user yet")
+            return res
+                .status(HttpStatusCode.FORBIDDEN)
+                .json({ message: "You are not friends with this user yet" })
 
         return next()
     }

@@ -1,3 +1,6 @@
+/**
+ * Fields regex
+ */
 export const REGEX = {
     // MongoDB ObjectId (_id). 24 characters hex string
     MONGO_ID: /^[0-9a-fA-F]{24}$/,

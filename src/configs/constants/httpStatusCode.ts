@@ -1,3 +1,6 @@
+/**
+ * Http status codes
+ */
 export const HttpStatusCode = {
     // Success
     OK: 200,

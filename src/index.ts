@@ -1,6 +1,5 @@
 import { connectDB } from "#/libs/database"
-import { globalErrorHandler } from "#/middlewares/globalErrorHandler"
-import protectRoutes from "#/middlewares/protectRoutes"
+import protectRoutes from "#/middlewares/route.middleware"
 import authRouters from "#/routes/auth.route"
 import conversationRouters from "#/routes/conversation.route"
 import friendRouters from "#/routes/friend.route"
@@ -10,7 +9,7 @@ import { app, server } from "#/socket/socket"
 
 import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
-import express from "express"
+import express, { NextFunction, Request, Response } from "express"
 
 /**
  * Server configurations
@@ -45,15 +44,18 @@ app.use("/api/users", userRouters)
 app.use("/api/friends", friendRouters)
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: Request, res: Response) => {
     res.status(404).json({
         status: "error",
         message: "Route not found",
     })
 })
 
-// Global error handler
-app.use(globalErrorHandler)
+// Global error
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error("GLOBAL ERROR:", err) // <--- Log này sẽ hiện ra "MulterError: Unexpected field"
+    res.status(500).send("Internal Server Error")
+})
 
 /**
  * Must connect to database successfully before start server

@@ -37,10 +37,7 @@ const protectRoutes = (req: Request, res: Response, next: NextFunction) => {
             next()
         })
     } catch (error) {
-        console.error(
-            "Error when verify JWT in middleware protectRoutes: ",
-            (error as Error).message,
-        )
+        console.error("Verify JWT in middleware protectRoutes ERROR: " + (error as Error).message)
         return res.status(500).json({ message: "Internal server error" })
     }
 }

@@ -2,7 +2,6 @@ import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import Conversation, { ConversationType } from "#/models/Conversation"
 import Friendship from "#/models/Friendship"
 import { MessageService } from "#/services/message.service"
-import AppError from "#/utils/AppError"
 
 import mongoose, { HydratedDocument } from "mongoose"
 
@@ -142,8 +141,7 @@ export class ConversationService {
         }
 
         // If type different with 'DIRECT' & 'GROUP'
-        if (!conversation)
-            throw new AppError(HttpStatusCode.BAD_REQUEST, "Conversation type invalid")
+        if (!conversation) throw new Error("Conversation type invalid")
 
         await conversation.populate([
             // Select name & avatar url of participants in conversation
