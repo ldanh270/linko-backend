@@ -13,14 +13,16 @@ const updateUserSchema = zod.object({
             .regex(
                 REGEX.USERNAME,
                 "Username can only contain lowercase letters, numbers, underscores (_) and dots (.)",
-            ),
+            )
+            .optional(),
         displayName: zod
             .string()
             .min(1, "Display name cannot empty")
-            .max(50, "Username must not exceed 30 characters"),
-        email: zod.email("Invalid email").trim(),
-        phone: zod.string().regex(REGEX.PHONE, "Invalid phone format"),
-        bio: zod.string().max(200).optional(),
+            .max(50, "Username must not exceed 30 characters")
+            .optional(),
+        email: zod.email("Invalid email").trim().optional(),
+        phone: zod.string().regex(REGEX.PHONE, "Invalid phone format").optional(),
+        bio: zod.string().max(200).optional().optional(),
     }),
 })
 

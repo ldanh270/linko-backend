@@ -59,6 +59,7 @@ export class UserController {
     updateProfile = async (req: Request, res: Response) => {
         try {
             const user = req.user
+            const { username, displayName, email, phone, bio } = req.body
 
             /**
              * Get file from upload middleware
@@ -76,25 +77,32 @@ export class UserController {
                 return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
 
             // Check username
+            if (username && username !== user.username) {
+                const user = await checkUniqueFields({ key: "username", value: username })
 
-            const checkUsername = checkUniqueFields({ key: "username", value: user.username })
-
-            if (!checkUsername)
-                return res.status(HttpStatusCode.CONFLICT).json({ message: "Existing username" })
+                if (user)
+                    return res
+                        .status(HttpStatusCode.CONFLICT)
+                        .json({ message: "Existing username" })
+            }
 
             // Check email
-            const checkEmail = checkUniqueFields({ key: "email", value: user.email })
+            if (email && email !== user.email) {
+                const user = await checkUniqueFields({ key: "email", value: email })
 
-            if (!checkEmail)
-                return res.status(HttpStatusCode.CONFLICT).json({ message: "Existing email" })
+                if (user)
+                    return res.status(HttpStatusCode.CONFLICT).json({ message: "Existing email" })
+            }
 
             // Check phone
-            const checkPhone = checkUniqueFields({ key: "phone", value: user.phone })
+            if (phone && phone != user.phone) {
+                const user = await checkUniqueFields({ key: "phone", value: phone })
 
-            if (!checkPhone)
-                return res
-                    .status(HttpStatusCode.CONFLICT)
-                    .json({ message: "Existing phone number" })
+                if (user)
+                    return res
+                        .status(HttpStatusCode.CONFLICT)
+                        .json({ message: "Existing phone number" })
+            }
 
             /**
              * LOGIC
@@ -112,7 +120,10 @@ export class UserController {
                 user: updatedUser,
             })
         } catch (error) {
-            console.log(error)
+            console.error("UserController - updateProfile ERROR: ", error)
+            return res
+                .status(HttpStatusCode.INTERNAL_SERVER)
+                .json({ message: "Internal server error" })
         }
     }
 }

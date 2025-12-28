@@ -66,36 +66,45 @@ export class UserService {
      * @returns New user with updated info
      */
     updateUserInfo = async ({ userId, updateData, files }: UpdateUserParams) => {
-        // TODO: ADD REROLL LOGIC TO HANDLE DATA INCONSISTENCY
-
         //  Check user
         const user = await User.findById(userId)
-
         if (!user) throw new Error("User not found")
 
-        // Update avatar
-        const newAvatar = await processImageHelper({
-            currentImage: user.avatar as ImageParams,
-            newFile: files?.avatar?.[0],
-            shouldDelete: updateData.avatar === "null",
-        })
+        /**
+         * Update avatar
+         */
+        if (files?.avatar?.[0]) {
+            const newAvatar = await processImageHelper({
+                currentImage: user.avatar as ImageParams,
+                newFile: files?.avatar?.[0],
+                shouldDelete: updateData.avatar === "null",
+            })
 
-        // Only update if return value different with undefined
-        if (newAvatar !== undefined) {
-            user.avatar = newAvatar
+            // Only update if return value different with undefined
+            if (newAvatar !== undefined) {
+                user.avatar = newAvatar
+            }
         }
 
-        // Update background
-        const newBackground = await processImageHelper({
-            currentImage: user.background as ImageParams,
-            newFile: files?.background?.[0],
-            shouldDelete: updateData.background === "null",
-        })
-        if (newBackground !== undefined) {
-            user.background = newBackground
+        /**
+         * Update background
+         */
+        if (files?.background?.[0]) {
+            const newBackground = await processImageHelper({
+                currentImage: user.background as ImageParams,
+                newFile: files?.background?.[0],
+                shouldDelete: updateData.background === "null",
+            })
+
+            // Only update if return value different with undefined
+            if (newBackground !== undefined) {
+                user.background = newBackground
+            }
         }
 
-        // Update Text Fields
+        /**
+         * Update Text Fields
+         */
         if (updateData.username) user.username = updateData.username
         if (updateData.displayName) user.displayName = updateData.displayName
 
