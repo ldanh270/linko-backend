@@ -3,7 +3,6 @@ import {
     ACCESS_TOKEN_TTL,
     REFRESH_TOKEN_TTL,
 } from "#/configs/constants/authTokens"
-import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
 import Session from "#/models/Session"
 import User from "#/models/User"
 

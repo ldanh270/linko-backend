@@ -1,6 +1,7 @@
-import cloudinary from "#/configs/cloudinary.config"
 import User from "#/models/User"
 import { processImageHelper } from "#/utils/image.util"
+
+import bcrypt from "bcrypt"
 
 interface KeywordsType {
     keyword: string
@@ -117,5 +118,28 @@ export class UserService {
         await user.save()
 
         return user
+    }
+
+    /**
+     * Delete current user
+     * @param userId Current user id
+     * @param password Password to verify
+     */
+    deleteUser = async ({ userId, password }: { userId: string; password: string }) => {
+        // Missing password
+        if (!password) throw new Error("Missing password")
+
+        const user = await User.findById(userId)
+
+        // User not found
+        if (!user) throw new Error("User not found")
+
+        // Compare input password with password in DB
+        const isCorrect = await bcrypt.compare(password, user.hashedPassword)
+
+        // Wrong password
+        if (!isCorrect) throw new Error("Invalid password")
+
+        await user.deleteOne()
     }
 }

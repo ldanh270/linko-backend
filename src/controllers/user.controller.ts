@@ -1,5 +1,4 @@
 import { HttpStatusCode } from "#/configs/constants/httpStatusCode"
-import User from "#/models/User"
 import { UserService } from "#/services/user.service"
 import { checkUniqueFields } from "#/utils/user.util"
 
@@ -139,6 +138,29 @@ export class UserController {
             })
         } catch (error) {
             console.error("UserController - updateProfile ERROR: " + (error as Error).message)
+            return res
+                .status(HttpStatusCode.INTERNAL_SERVER)
+                .json({ message: "Internal server error" })
+        }
+    }
+
+    // DELETE /
+    deleteUser = async (req: Request, res: Response) => {
+        try {
+            const user = req.user
+            const { password } = req.body
+
+            // User not logged-in or missing user data
+            if (!user._id)
+                return res.status(HttpStatusCode.UNAUTHORIZED).json({ message: "Unauthorized" })
+
+            // Delete user
+            await this.service.deleteUser({ userId: user._id.toString(), password })
+
+            // Delete successfully
+            return res.status(HttpStatusCode.NO_CONTENT)
+        } catch (error) {
+            console.error("UserController - deleteUser error:" + (error as Error).message)
             return res
                 .status(HttpStatusCode.INTERNAL_SERVER)
                 .json({ message: "Internal server error" })
