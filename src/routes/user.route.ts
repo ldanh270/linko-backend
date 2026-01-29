@@ -32,6 +32,6 @@ userRoutes.patch(
 )
 
 // Delete current user account
-userRoutes.delete("/", () => {})
+userRoutes.delete("/", controller.deleteUser)
 
 export default userRoutes
