@@ -28,6 +28,12 @@ interface UpdateUserParams {
 }
 
 export class UserService {
+    /**
+     * Search user by keywords
+     * @param keyword Keyword to search
+     * @param type Type of search (TYPING or FULL)
+     * @returns Array of users
+     */
     searchUserByKeywords = async ({ keyword, type }: KeywordsType) => {
         const TYPING_LIMIT = 5
         const FULL_LIMIT = 50
@@ -53,6 +59,11 @@ export class UserService {
         return users
     }
 
+    /**
+     * Get user info by user id
+     * @param userId User id
+     * @returns User info
+     */
     getUserInfo = async ({ userId }: { userId: string }) => {
         const user = await User.findById({ _id: userId })
 
